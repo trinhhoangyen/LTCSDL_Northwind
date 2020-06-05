@@ -7,11 +7,11 @@ declare var $:any; // it dont know jquery
   styleUrls: ['./product.component.css']
 })
 export class ProductComponent{
-  size: number = 5;
+  size: number = 10;
   products: any={
     data:[],
     page: 0,
-    size: 5,
+    size: this.size,
     totalPages: 0,
     totalRecord: 0,
   };
@@ -64,7 +64,7 @@ export class ProductComponent{
       let nextPage = this.products.page + 1;
       let x ={
         page:nextPage,
-        size:5,
+        size:this.size,
         keyword:""
       };
       this.http.post('https://localhost:44380/' + 'api/Products/search-products', x).subscribe(result => {
@@ -85,7 +85,7 @@ export class ProductComponent{
       let nextPage = this.products.page - 1;
       let x ={
         page:nextPage,
-        size:5,
+        size:this.size,
         keyword:""
       };
       this.http.post('https://localhost:44380/' + 'api/Products/search-products', x).subscribe(result => {

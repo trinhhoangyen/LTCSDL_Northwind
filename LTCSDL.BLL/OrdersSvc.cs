@@ -104,5 +104,22 @@ namespace LTCSDL.BLL
             return res;
         }
 
+        public List<object> GetOrderInSpaceTime(DateTime dateFrom, DateTime dateTo, int page, int size)
+        {
+            List<object> res = new List<object>();
+            res = _rep.GetOrderInSpaceTime(dateFrom, dateTo, page, size);
+            return res;
+        }
+        public object GetOrderInSpaceTime_Linq(DateTime dateFrom, DateTime dateTo, int page, int size)
+        {
+            return _rep.GetOrderInSpaceTime_Linq(dateFrom, dateTo, page, size);
+        }
+        public List<object> GetOrderDetailByOrderId(int id)
+        {
+            List<object> res = new List<object>();
+            res = _rep.GetOrderDetailByOrderId(id);
+            return res;
+        }
+
     }
 }

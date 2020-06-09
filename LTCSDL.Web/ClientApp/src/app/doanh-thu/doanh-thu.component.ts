@@ -13,15 +13,17 @@ export class DoanhThuComponent {
     
   }
 
-  TraCuu(){
+  TraCuuDTNVTheoNgay(){
     let date= {
       BeginTime: this.ngayTraCuu,
       EndTime: this.ngayTraCuu,
+      page: 1,
+      size: 5
     }
     this.http.post('https://localhost:44380/' + 'api/Employees/get-dtnv-trong-ngay', date).subscribe(result => {
       var res  :any = result;
       this.lstDoanhThu = res.data;
-      console.log(result);
+      console.log(this.lstDoanhThu);
     }, error => console.error(error));
   }
 }

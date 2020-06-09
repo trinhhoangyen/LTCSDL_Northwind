@@ -12,6 +12,7 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { CategoryComponent } from './category/category.component';
 import { ProductComponent } from './product/product.component';
 import { DoanhThuComponent } from './doanh-thu/doanh-thu.component';
+import { OrderComponent } from './order/order.component';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { DoanhThuComponent } from './doanh-thu/doanh-thu.component';
     FetchDataComponent,
     CategoryComponent,
     ProductComponent,
-    DoanhThuComponent
+    DoanhThuComponent,
+    OrderComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -35,7 +37,8 @@ import { DoanhThuComponent } from './doanh-thu/doanh-thu.component';
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'category', component: CategoryComponent },
       { path: 'product', component: ProductComponent },
-      { path: 'doanh-thu', component: DoanhThuComponent }
+      { path: 'doanh-thu', component: DoanhThuComponent },
+      { path: 'order', component: OrderComponent }
     ])
   ],
   providers: [],

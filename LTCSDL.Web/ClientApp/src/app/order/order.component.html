@@ -1,0 +1,57 @@
+<h1>Hóa đơn</h1>
+
+<div>
+    <div class="row mb-3">
+        <label class="col-2 ml-5">Từ ngày: </label>
+        <input class="col-7" type="date" class="col-4 form-control" [(ngModel)]="dateFrom" style="margin-right: 10px;"/>
+    </div>
+    <div class="row mb-3">
+        <label class="col-2 ml-5">Đến ngày: </label>
+        <input class="col-7" type="date" class="col-4 form-control" [(ngModel)]="dateTo" style="margin-right: 10px;"/>  
+    </div>
+    <div class="row">
+        <div class="col-3"></div>
+        <button class="btn btn-success form-control col-2" (click)="TraCuu()">Tra cứu</button>
+    </div>
+</div>
+
+<table class="table table-striped" style="margin-top: 10px;">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>OrderID</th>
+            <th>CustomerID</th>
+            <th>EmployeeID</th>
+            <th>Freight</th>
+            <th>OrderDate</th>
+            <th>RequiredDate</th>
+            <th>ShipAddress</th>
+            <th>ShipCity</th>
+            <th>ShipCountry</th>
+            <th>ShipName</th>
+            <th>ShipPostalCode</th>
+            <th>ShipRegion</th>
+            <th>ShipVia</th>
+            <th>ShippedDate</th>
+        </tr>
+    </thead>
+    <tbody *ngFor="let item of list">
+        <tr>
+            <td>{{item.stt}}</td>
+            <td>{{item.orderId}}</td>
+            <td>{{item.customerId}}</td>
+            <td>{{item.employeeId}}</td>
+            <td>{{item.freight}}</td>
+            <td>{{item.orderDate}}</td>
+            <td>{{item.requiredDate}}</td>
+            <td>{{item.shipAddress}}</td>
+            <td>{{item.shipCity}}</td>
+            <td>{{item.shipCountry}}</td>
+            <td>{{item.shipName}}</td>
+            <td>{{item.shipPostalCode}}</td>
+            <td>{{item.shipRegion}}</td>
+            <td>{{item.shipVia}}</td>
+            <td>{{item.shippedDate}}</td>
+        </tr>
+    </tbody>
+</table>

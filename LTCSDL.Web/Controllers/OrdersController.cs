@@ -1,5 +1,6 @@
 ﻿using LTCSDL.BLL;
 using LTCSDL.Common.DAL;
+using LTCSDL.Common.Req;
 using LTCSDL.Common.Rsp;
 using LTCSDL.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -56,6 +57,27 @@ namespace LTCSDL.Web.Controllers
         {
             var res = new SingleRsp();
             res.Data = _svc.GetCustOrdersDetail_Linq(orderId);
+            return Ok(res);
+        }
+        [HttpPost("get-order-in-space-time")]
+        public IActionResult GetOrderInSpaceTime([FromBody] DatetimeReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.GetOrderInSpaceTime(req.BeginTime, req.EndTime, req.Page, req.Size);
+            return Ok(res);
+        }
+        [HttpPost("get-order-in-space-time-linq")]
+        public IActionResult GetOrderInSpaceTime_Linq([FromBody] DatetimeReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.GetOrderInSpaceTime_Linq(req.BeginTime, req.EndTime, req.Page, req.Size);
+            return Ok(res);
+        }
+        [HttpPost("get-order-detail-by-id")]
+        public IActionResult GetOrderDetailByOrderId([FromBody] SimpleReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.GetOrderDetailByOrderId(req.Id);
             return Ok(res);
         }
 

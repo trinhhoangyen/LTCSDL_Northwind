@@ -53,6 +53,7 @@ namespace LTCSDL.DAL
             }
             return res;
         }
+
         public SingleRsp UpdateOrder(Orders pro)
         {
             var res = new SingleRsp();
@@ -77,6 +78,7 @@ namespace LTCSDL.DAL
             }
             return res;
         }
+
         public List<object> GetCustOrderHist(String custID)
         {
             List<Object> res = new List<object>();
@@ -113,6 +115,7 @@ namespace LTCSDL.DAL
             }
             return res;
         }
+
         public object GetCustOrderHist_Linq(String custID)
         {
             var pro = Context.Products.Join(Context.OrderDetails, a => a.ProductId, b => b.ProductId, (a, b) => new
@@ -137,6 +140,7 @@ namespace LTCSDL.DAL
                 }).ToList();
             return res;
         }
+
         public object GetCustOrdersDetail_Linq(int orderId)
         {
             var res = from p in Context.Products
@@ -153,6 +157,7 @@ namespace LTCSDL.DAL
                       };
             return res;
         }
+
         public object GetCustOrdersDetail_Linq1(int orderId)
         {
             var res = Context.Products.Join(Context.OrderDetails, a => a.ProductId, b => b.ProductId, (a, b) => new
@@ -164,6 +169,145 @@ namespace LTCSDL.DAL
                 Discount = b.Discount * 100,
                 ExtendedPrice = b.Quantity * (1 - (decimal)b.Discount) * b.UnitPrice
             }).Where(x => x.OrderId == orderId).ToList();
+            return res;
+        }
+
+        public List<object> GetOrderInSpaceTime(DateTime dateFrom, DateTime dateTo, int page, int size)
+        {
+            List<object> res = new List<object>();
+            var cnn = (SqlConnection)Context.Database.GetDbConnection();
+            if (cnn.State == ConnectionState.Closed)
+            {
+                cnn.Open();
+            }
+            try
+            {
+                SqlDataAdapter da = new SqlDataAdapter();
+                DataSet ds = new DataSet();
+                var cmd = cnn.CreateCommand();
+                cmd.CommandText = "dh_DonHangTheoNgay";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@dateFrom", dateFrom);
+                cmd.Parameters.AddWithValue("@dateTo", dateTo);
+                cmd.Parameters.AddWithValue("@page", page);
+                cmd.Parameters.AddWithValue("@size", size);
+                da.SelectCommand = cmd;
+                da.Fill(ds);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        var x = new
+                        {
+                            STT = row["STT"],
+                            OrderId = row["OrderId"],
+                            CustomerId = row["CustomerId"],
+                            EmployeeId = row["EmployeeId"],
+                            OrderDate = row["OrderDate"],
+                            RequiredDate = row["RequiredDate"],
+                            ShippedDate = row["ShippedDate"],
+                            ShipVia = row["ShipVia"],
+                            Freight = row["Freight"],
+                            ShipName = row["ShipName"],
+                            ShipAddress = row["ShipAddress"],
+                            ShipCity = row["ShipCity"],
+                            ShipRegion = row["ShipRegion"],
+                            ShipPostalCode = row["ShipPostalCode"],
+                            ShipCountry = row["ShipCountry"]
+
+                        };
+                        res.Add(x);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                res = null;
+            }
+            return res;
+        }
+
+        public object GetOrderInSpaceTime_Linq(DateTime dateFrom, DateTime dateTo, int page, int size)
+        {
+            var res = All.Where(x => x.OrderDate >= dateFrom && x.OrderDate <= dateTo);
+            var offSet = (page - 1) * size;
+            var total = res.Count();
+            int totalPage = (total % size) == 0 ? (int)(total / size) : ((int)(total / size) + 1);
+            var data = res.OrderBy(x => x.OrderDate).Skip(offSet).Take(size).ToList();
+            List<object> lst = new List<object>();
+            for(int i = 0; i <  data.Count(); i++)
+            {
+                var item = data[i];
+                var tam = new
+                {
+                    STT = i + 1 + offSet,
+                    OrderId = item.OrderId,
+                    CustomerId = item.CustomerId,
+                    EmployeeId = item.EmployeeId,
+                    OrderDate = item.OrderDate,
+                    RequiredDate = item.RequiredDate,
+                    ShippedDate = item.ShippedDate,
+                    ShipVia = item.ShipVia,
+                    Freight = item.Freight,
+                    ShipName = item.ShipName,
+                    ShipAddress = item.ShipAddress,
+                    ShipCity = item.ShipCity,
+                    ShipRegion = item.ShipRegion,
+                    ShipPostalCode = item.ShipPostalCode,
+                    ShipCountry = item.ShipCountry
+
+                };
+                lst.Add(tam);
+            }    
+            return new
+            {
+                Data = lst,
+                TotalRecords = total,
+                Page = page,
+                Size = size,
+                TotalPages = totalPage
+            };
+        }
+
+        public List<object> GetOrderDetailByOrderId(int id)
+        {
+            List<object> res = new List<object>();
+            var cnn = (SqlConnection)Context.Database.GetDbConnection();
+            if (cnn.State == ConnectionState.Closed)
+            {
+                cnn.Open();
+            }
+            try
+            {
+                SqlDataAdapter da = new SqlDataAdapter();
+                DataSet ds = new DataSet();
+                var cmd = cnn.CreateCommand();
+                cmd.CommandText = "dH_ChiTietDonHang";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@OrderID", id);
+                da.SelectCommand = cmd;
+                da.Fill(ds);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        var x = new
+                        {
+                            OrderId = row["OrderId"],
+                            ProductName = row["ProductName"],
+                            EmployeeId = row["EmployeeId"],
+                            CustomerId = row["CustomerId"],
+                            OrderDate = row["OrderDate"],
+                            Total = row["Total"]
+                        };
+                        res.Add(x);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                res = null;
+            }
             return res;
         }
         #endregion

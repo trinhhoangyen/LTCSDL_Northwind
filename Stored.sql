@@ -19,7 +19,7 @@ GO
 exec dh_DonHangTheoNgay '6/7/1996', '9/7/1996', 1, 5
 go
 
---- 
+--- Chi tiết đơn hàng
 CREATE PROC dH_ChiTietDonHang( @OrderID int)
 AS
 BEGIN

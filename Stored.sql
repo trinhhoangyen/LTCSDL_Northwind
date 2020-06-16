@@ -1,4 +1,90 @@
 ﻿/*
+-- 16/6/2020
+*/
+-- Doanh thu theo quoc gia
+ALTER PROC dh_DoanhThuTheoQG( @month int, @year int)
+AS 
+BEGIN
+	SELECT c.Country, SUM(od.UnitPrice * od.Quantity * (1-od.Discount)) as DoanhThu
+	FROM Orders o, [Order Details] od, Customers c
+	WHERE o.OrderID = od.OrderID and o.CustomerID = c.CustomerID
+		and MONTH(o.OrderDate) = @month and YEAR(o.OrderDate) = @year
+	GROUP BY c.Country
+END
+GO
+
+EXEC dh_DoanhThuTheoQG 7, 1996
+GO
+
+-- Danh sach mat hang ban chay nhat trong khoang thoi gian
+ALTER PROC dh_DSMatHangChayNhat(@page int, @size int, @month int, @year int, @isQuantity int)
+AS 
+BEGIN
+declare @begin int, @end int
+	set @end = @page * @size
+	set @begin = @end - @size + 1
+
+	-- sap xep theo doanhthu
+	if @isQuantity = 1
+	Begin
+		with tam as(
+			SELECT ROW_NUMBER() OVER(ORDER BY p.ProductID) AS STT, 
+				p.ProductID, p.ProductName, 
+				SUM(od.UnitPrice * od.Quantity * (1-od.Discount)) AS DoanhThu
+			FROM Orders o, [Order Details] od, Products p
+			WHERE o.OrderID = od.OrderID and od.ProductID = p.ProductID
+				and MONTH(o.OrderDate) = @month and YEAR(o.OrderDate) = @year
+			GROUP BY p.ProductID, p.ProductName
+		)
+		SELECT * FROM tam WHERE STT between @begin and @end
+		ORDER BY DoanhThu DESC
+	End
+	-- sap xep theo so luong
+	else if @isQuantity = 0
+		Begin
+			with tam as(
+			SELECT ROW_NUMBER() OVER(ORDER BY p.ProductID) AS STT, 
+				p.ProductID, p.ProductName, 
+				SUM(od.Quantity) AS SoLuong
+			FROM Orders o, [Order Details] od, Products p
+			WHERE o.OrderID = od.OrderID and od.ProductID = p.ProductID
+				and MONTH(o.OrderDate) = @month and YEAR(o.OrderDate) = @year
+			GROUP BY p.ProductID, p.ProductName
+		)
+		SELECT * FROM tam WHERE STT between @begin and @end
+		ORDER BY SoLuong DESC
+		End
+END
+GO
+
+EXEC dh_DSMatHangChayNhat 1, 20, 7, 1996, 0
+GO
+
+-- Danh sach don hang nhan vien theo khoang thoi gian ( co phan trang)
+alter PROC dh_DSDHNV (@page int, @size int, @keyword nvarchar(50), @dateFrom datetime, @dateTo datetime)
+AS
+BEGIN
+	declare @begin int, @end int
+	set @end = @page * @size
+	set @begin = @end - @size + 1
+	;with tam as(
+		select ROW_NUMBER() over(order by OrderID) AS STT, * 
+		from Orders 
+		where OrderDate between @dateFrom and @dateTo
+			and EmployeeID in (
+				SELECT EmployeeID 
+				FROM Employees 
+				WHERE LastName = @keyword)
+	)
+
+	SELECT * FROM tam WHERE STT between @begin and @end
+END
+GO
+
+exec dh_DSDHNV 1, 5, 'Davolio', '1996-07-06', '1996-09-09'
+go
+
+/*
 -- 9/6/2020
 */
 --- Lấy danh sách đơn hàng theo thời gian nhập vô có phân trang

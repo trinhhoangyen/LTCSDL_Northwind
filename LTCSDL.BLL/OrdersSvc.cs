@@ -104,22 +104,36 @@ namespace LTCSDL.BLL
             return res;
         }
 
-        public List<object> GetOrderInSpaceTime(DateTime dateFrom, DateTime dateTo, int page, int size)
+        public List<object> GetOrderInSpaceTime(OrderFullReq req)
         {
             List<object> res = new List<object>();
-            res = _rep.GetOrderInSpaceTime(dateFrom, dateTo, page, size);
+            res = _rep.GetOrderInSpaceTime(req);
             return res;
         }
-        public object GetOrderInSpaceTime_Linq(DateTime dateFrom, DateTime dateTo, int page, int size)
+        public object GetOrderInSpaceTime_Linq(OrderFullReq req)
         {
-            return _rep.GetOrderInSpaceTime_Linq(dateFrom, dateTo, page, size);
+            return _rep.GetOrderInSpaceTime_Linq(req);
         }
         public List<object> GetOrderDetailByOrderId(int id)
         {
-            List<object> res = new List<object>();
-            res = _rep.GetOrderDetailByOrderId(id);
-            return res;
+            return _rep.GetOrderDetailByOrderId(id);
+        }
+        public object GetOrderOfEmployee(OrderFullReq req)
+        {
+            return _rep.GetOrderOfEmployee(req);
+        }
+        public object GetOrderOfEmployee_Linq(OrderFullReq req)
+        {
+            return _rep.GetOrderOfEmployee_Linq(req);
+        }
+        public object GetBestSeller(OrderFullReq req)
+        {
+            return _rep.GetBestSeller(req);
         }
 
+        public object DoanhThuTheoQG(OrderFullReq req)
+        {
+            return _rep.DoanhThuTheoQG(req);
+        }
     }
 }

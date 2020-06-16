@@ -1,4 +1,5 @@
 ﻿using LTCSDL.Common.BLL;
+using LTCSDL.Common.Req;
 using LTCSDL.DAL;
 using LTCSDL.DAL.Models;
 using System;
@@ -18,9 +19,9 @@ namespace LTCSDL.BLL
         //    var res = _rep.DoanhThuTheoNgay_Linq(date);
         //    return res;
         //}
-        public object DoanhThuTheoThoiGian(DateTime StartDate, DateTime EndDate)
+        public object DoanhThuTheoThoiGian(OrderFullReq req)
         {
-            return _rep.DoanhThuTheoThoiGian(StartDate, EndDate);
+            return _rep.DoanhThuTheoThoiGian(req);
         }
     }
 }

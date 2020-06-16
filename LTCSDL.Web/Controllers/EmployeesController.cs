@@ -22,10 +22,10 @@ namespace LTCSDL.Web.Controllers
         private readonly EmployeesSvc _svc;
 
         [HttpPost("get-dtnv-trong-ngay")]
-        public IActionResult DoanhThuTheoNgay([FromBody] DatetimeReq req)
+        public IActionResult DoanhThuTheoNgay([FromBody] OrderFullReq req)
         {
             var res = new SingleRsp();
-            res.Data = _svc.DoanhThuTheoNgay(req.BeginTime);
+            res.Data = _svc.DoanhThuTheoNgay(req.DateFrom);
             return Ok(res);
         }
 
@@ -38,10 +38,10 @@ namespace LTCSDL.Web.Controllers
         //}
 
         [HttpPost("get-doanh-thu-theo-thoi-gian")]
-        public IActionResult DoanhThuTheoThoiGian([FromBody] DatetimeReq date)
+        public IActionResult DoanhThuTheoThoiGian([FromBody] OrderFullReq req)
         {
             var res = new SingleRsp(); 
-            res.Data =_svc.DoanhThuTheoThoiGian(date.BeginTime, date.EndTime);
+            res.Data =_svc.DoanhThuTheoThoiGian(req);
             return Ok(res);
         }
     }

@@ -1,4 +1,5 @@
 ﻿using LTCSDL.Common.DAL;
+using LTCSDL.Common.Req;
 using LTCSDL.Common.Rsp;
 using LTCSDL.DAL.Models;
 using Microsoft.Data.SqlClient;
@@ -172,7 +173,7 @@ namespace LTCSDL.DAL
             return res;
         }
 
-        public List<object> GetOrderInSpaceTime(DateTime dateFrom, DateTime dateTo, int page, int size)
+        public List<object> GetOrderInSpaceTime(OrderFullReq req)
         {
             List<object> res = new List<object>();
             var cnn = (SqlConnection)Context.Database.GetDbConnection();
@@ -187,10 +188,10 @@ namespace LTCSDL.DAL
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = "dh_DonHangTheoNgay";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@dateFrom", dateFrom);
-                cmd.Parameters.AddWithValue("@dateTo", dateTo);
-                cmd.Parameters.AddWithValue("@page", page);
-                cmd.Parameters.AddWithValue("@size", size);
+                cmd.Parameters.AddWithValue("@dateFrom", req.DateFrom);
+                cmd.Parameters.AddWithValue("@dateTo", req.DateTo);
+                cmd.Parameters.AddWithValue("@page", req.Page);
+                cmd.Parameters.AddWithValue("@size", req.Size);
                 da.SelectCommand = cmd;
                 da.Fill(ds);
                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
@@ -227,13 +228,13 @@ namespace LTCSDL.DAL
             return res;
         }
 
-        public object GetOrderInSpaceTime_Linq(DateTime dateFrom, DateTime dateTo, int page, int size)
+        public object GetOrderInSpaceTime_Linq(OrderFullReq req)
         {
-            var res = All.Where(x => x.OrderDate >= dateFrom && x.OrderDate <= dateTo);
-            var offSet = (page - 1) * size;
+            var res = All.Where(x => x.OrderDate >= req.DateFrom && x.OrderDate <= req.DateTo);
+            var offSet = (req.Page - 1) * req.Size;
             var total = res.Count();
-            int totalPage = (total % size) == 0 ? (int)(total / size) : ((int)(total / size) + 1);
-            var data = res.OrderBy(x => x.OrderDate).Skip(offSet).Take(size).ToList();
+            int totalPage = (total % req.Size) == 0 ? (int)(total / req.Size) : ((int)(total / req.Size) + 1);
+            var data = res.OrderBy(x => x.OrderDate).Skip(offSet).Take(req.Size).ToList();
             List<object> lst = new List<object>();
             for(int i = 0; i <  data.Count(); i++)
             {
@@ -263,8 +264,8 @@ namespace LTCSDL.DAL
             {
                 Data = lst,
                 TotalRecords = total,
-                Page = page,
-                Size = size,
+                Page = req.Page,
+                Size = req.Size,
                 TotalPages = totalPage
             };
         }
@@ -308,6 +309,208 @@ namespace LTCSDL.DAL
             {
                 res = null;
             }
+            return res;
+        }
+
+        public List<object> GetOrderOfEmployee(OrderFullReq req)
+        {
+            List<object> res = new List<object>();
+            var cnn = (SqlConnection)Context.Database.GetDbConnection();
+            if (cnn.State == ConnectionState.Closed)
+            {
+                cnn.Open();
+            }
+            try
+            {
+                SqlDataAdapter da = new SqlDataAdapter();
+                DataSet ds = new DataSet();
+                var cmd = cnn.CreateCommand();
+                cmd.CommandText = "dh_DSDHNV";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@page", req.Page);
+                cmd.Parameters.AddWithValue("@size", req.Size);
+                cmd.Parameters.AddWithValue("@keyword", req.Keyword);
+                cmd.Parameters.AddWithValue("@dateFrom", req.DateFrom);
+                cmd.Parameters.AddWithValue("@dateTo", req.DateTo);
+                da.SelectCommand = cmd;
+                da.Fill(ds);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        var x = new
+                        {
+                            OrderId = row["OrderId"],
+                            CustomerId = row["CustomerId"],
+                            EmployeeId = row["EmployeeId"],
+                            OrderDate = row["OrderDate"],
+                            RequiredDate = row["RequiredDate"],
+                            ShippedDate = row["ShippedDate"],
+                            ShipVia = row["ShipVia"],
+                            Freight = row["Freight"],
+                            ShipName = row["ShipName"],
+                            ShipAddress = row["ShipAddress"],
+                            ShipCity = row["ShipCity"],
+                            ShipRegion = row["ShipRegion"],
+                            ShipPostalCode = row["ShipPostalCode"],
+                            ShipCountry = row["ShipCountry"]
+                        };
+                        res.Add(x);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                res = null;
+            }
+            return res;
+        }
+
+        public object GetOrderOfEmployee_Linq(OrderFullReq req)
+        {
+            var res = Context.Orders.Join(Context.Employees, a => a.EmployeeId, b => b.EmployeeId, (a, b) => new
+            {
+                a.OrderId,
+                a.CustomerId,
+                a.EmployeeId,
+                a.OrderDate,
+                b.FirstName,
+                b.LastName
+            }).Where(x => x.LastName.Equals(req.Keyword) && x.OrderDate >= req.DateFrom && x.OrderDate <= req.DateTo).ToList();
+            
+            var offSet = (req.Page - 1) * req.Size;
+            var total = res.Count();
+            int totalPage = (total % req.Size) == 0 ? (int)(total / req.Size) : ((int)(total / req.Size) + 1);
+            var data = res.OrderBy(x => x.OrderDate).Skip(offSet).Take(req.Size).ToList();
+            List<object> lst = new List<object>();
+            for (int i = 0; i < data.Count(); i++)
+            {
+                var item = data[i];
+                var tam = new
+                {
+                    STT = i + 1 + offSet,
+                    OrderId = item.OrderId,
+                    CustomerId = item.CustomerId,
+                    EmployeeId = item.EmployeeId,
+                    OrderDate = item.OrderDate,
+                    FirstName = item.FirstName,
+                    LastName = item.LastName
+                };
+                lst.Add(tam);
+            }
+            return new
+            {
+                Data = lst,
+                TotalRecords = total,
+                Page = req.Page,
+                Size = req.Size,
+                TotalPages = totalPage
+            };
+        }
+
+        public List<object> GetBestSeller(OrderFullReq req)
+        {
+            List<object> res = new List<object>();
+            var cnn = (SqlConnection)Context.Database.GetDbConnection();
+            if (cnn.State == ConnectionState.Closed)
+            {
+                cnn.Open();
+            }
+            try
+            {
+                SqlDataAdapter da = new SqlDataAdapter();
+                DataSet ds = new DataSet();
+                var cmd = cnn.CreateCommand();
+                cmd.CommandText = "dh_DSMatHangChayNhat";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@page", req.Page);
+                cmd.Parameters.AddWithValue("@size", req.Size);
+                cmd.Parameters.AddWithValue("@month", req.Month);
+                cmd.Parameters.AddWithValue("@year", req.Year);
+                cmd.Parameters.AddWithValue("@isQuantity", req.IsQuantity);
+                da.SelectCommand = cmd;
+                da.Fill(ds);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    if( req.IsQuantity == 1)
+                        foreach (DataRow row in ds.Tables[0].Rows)
+                        {   
+                            var x = new
+                            {
+                                ProductId = row["ProductId"],
+                                ProductName = row["ProductName"],
+                                DoanhThu = row["DoanhThu"]
+                            };
+                            res.Add(x);
+                        }
+                    else if(req.IsQuantity == 0)
+                            foreach (DataRow row in ds.Tables[0].Rows)
+                            {
+                                var x = new
+                                {
+                                    ProductId = row["ProductId"],
+                                    ProductName = row["ProductName"],
+                                    SoLuong = row["SoLuong"]
+                                };
+                                res.Add(x);
+                            }
+                }
+            }
+            catch (Exception ex)
+            {
+                res = null;
+            }
+            return res;
+        }
+
+        public List<object> DoanhThuTheoQG(OrderFullReq req)
+        {
+            List<object> res = new List<object>();
+            var cnn = (SqlConnection)Context.Database.GetDbConnection();
+            if (cnn.State == ConnectionState.Closed)
+            {
+                cnn.Open();
+            }
+            try
+            {
+                SqlDataAdapter da = new SqlDataAdapter();
+                DataSet ds = new DataSet();
+                var cmd = cnn.CreateCommand();
+                cmd.CommandText = "dh_DoanhThuTheoQG";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@month", req.Month);
+                cmd.Parameters.AddWithValue("@year", req.Year);
+                da.SelectCommand = cmd;
+                da.Fill(ds);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        var x = new
+                        {
+                            Country = row["Country"],
+                            DoanhThu = row["DoanhThu"]
+                        };
+                        res.Add(x);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                res = null;
+            }
+            return res;
+        }
+
+        // erroe
+        public object DoanhThuTheoQG_Linq(OrderFullReq req)
+        {
+            var res = Context.Orders.Join(Context.Customers, a => a.CustomerId, b => b.CustomerId, (a, b) => new
+            {
+                a.OrderDate,
+                b.Country
+            }).Where(x => x.OrderDate.Value.Month == req.Month && x.OrderDate.Value.Year == req.Year).ToList();
+
             return res;
         }
         #endregion

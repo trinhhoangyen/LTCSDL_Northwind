@@ -1,4 +1,5 @@
 ﻿using LTCSDL.Common.DAL;
+using LTCSDL.Common.Req;
 using LTCSDL.DAL.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -90,7 +91,7 @@ namespace LTCSDL.DAL
 
         //    return ret;
         //}
-        public object DoanhThuTheoThoiGian(DateTime Begintime, DateTime EndTime)
+        public object DoanhThuTheoThoiGian(OrderFullReq req)
         {
             List<object> res = new List<object>();
             var cnn = (SqlConnection)Context.Database.GetDbConnection();
@@ -105,8 +106,8 @@ namespace LTCSDL.DAL
                 var cmd = cnn.CreateCommand();
                 cmd.CommandText = "DoanhThuTheoThoiGian";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@begintime", Begintime);
-                cmd.Parameters.AddWithValue("@endTime", EndTime);
+                cmd.Parameters.AddWithValue("@begintime", req.DateFrom);
+                cmd.Parameters.AddWithValue("@endTime", req.DateTo);
                 da.SelectCommand = cmd;
                 da.Fill(ds);
                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)

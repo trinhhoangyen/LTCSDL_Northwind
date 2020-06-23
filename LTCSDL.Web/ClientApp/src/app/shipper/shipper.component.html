@@ -1,1 +1,28 @@
-<p>shipper works!</p>
+<h3>Doanh thu shipper</h3>
+<div class="row mb-5">
+  <input class="col col-2 form-control mr-3" type="number" name="month" id="month" placeholder="Nhap thang"
+     [(ngModel)]="month">
+  <input class="col col-2 form-control mr-3" type="number" name="year" id="year" placeholder="Nhap nam"
+    [(ngModel)]="year">
+  <button class="col col-3 btn btn-primary form-control mr-3" (click)="onShowTable()">Xem table</button>
+  <button class="col col-3 btn btn-primary form-control" (click)="onShowChart()">Xem Bar Chart</button>
+</div>
+
+<!-- table -->
+<table *ngIf="isTable" class="table table-striped mt-10">
+  <thead>
+    <tr>
+      <th>ShipeprID</th>
+      <th>DoanhThu</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of list">
+      <td>{{item.shipperId}}</td>
+      <td>{{item.doanhThu}}</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- bar chart -->
+<div *ngIf="!isTable" id="barchart_values" style="width: 900px; height: 300px;"></div>

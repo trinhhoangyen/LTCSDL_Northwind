@@ -45,7 +45,7 @@ export class HomeComponent {
       var options = {
         legend: 'none',
         pieSliceText: 'label',
-        title: 'Swiss Language Use (100 degree rotation)',
+        title: 'Doanh thu theo quốc gia trong ' + this.month + "/" + this.year,
         pieStartAngle: 100,
       };
   

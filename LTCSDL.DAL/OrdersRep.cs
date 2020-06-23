@@ -82,7 +82,7 @@ namespace LTCSDL.DAL
 
         public List<object> GetCustOrderHist(String custID)
         {
-            List<Object> res = new List<object>();
+            List<object> res = new List<object>();
             var cnn = (SqlConnection)Context.Database.GetDbConnection();
             if (cnn.State == ConnectionState.Closed)
             {
@@ -117,7 +117,7 @@ namespace LTCSDL.DAL
             return res;
         }
 
-        public object GetCustOrderHist_Linq(String custID)
+        public object GetCustOrderHist_Linq(string custID)
         {
             var pro = Context.Products.Join(Context.OrderDetails, a => a.ProductId, b => b.ProductId, (a, b) => new
             {
@@ -154,7 +154,7 @@ namespace LTCSDL.DAL
                           d.UnitPrice,
                           d.Quantity,
                           Discount = d.Discount * 100,
-                          ExtendedPrice = ((decimal)d.Quantity * (1 - (decimal)d.Discount) * (d.UnitPrice))
+                          ExtendedPrice = (d.Quantity * (1 - (decimal)d.Discount) * (d.UnitPrice))
                       };
             return res;
         }
@@ -502,7 +502,7 @@ namespace LTCSDL.DAL
             return res;
         }
 
-        // erroe
+        // error
         public object DoanhThuTheoQG_Linq(OrderFullReq req)
         {
             var res = Context.Orders.Join(Context.Customers, a => a.CustomerId, b => b.CustomerId, (a, b) => new

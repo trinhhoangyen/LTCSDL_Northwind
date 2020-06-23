@@ -38,18 +38,36 @@ namespace LTCSDL.BLL
         #endregion
 
         #region Methods
-        public SingleRsp CreateShipper(ShipperReq ship)
+        public SingleRsp CreateShipper(ShipperReq req)
         {
             var res = new SingleRsp();
-            Shippers shippers = new Shippers();
+            Shippers obj = new Shippers();
 
-            shippers.ShipperId = ship.ShipperId;
-            shippers.CompanyName = ship.CompanyName;
-            shippers.Phone = ship.Phone;
+            obj.ShipperId = req.ShipperId;
+            obj.CompanyName = req.CompanyName;
+            obj.Phone = req.Phone;
 
-            res = _rep.CreateShipper(shippers);
-            res.Data = shippers;
+            res = _rep.CreateShipper(obj);
+            res.Data = obj;
             return res;
+        }
+
+        public SingleRsp UpdateShipper(ShipperReq req)
+        {
+            var res = new SingleRsp();
+            Shippers obj = new Shippers();
+
+            obj.ShipperId = req.ShipperId;
+            obj.CompanyName = req.CompanyName;
+            obj.Phone = req.Phone;
+
+            res = _rep.UpdateShipper(obj);
+            res.Data = obj;
+            return res;
+        }
+        public SingleRsp DoanhThuShipper(DateReq req)
+        {
+            return _rep.DoanhThuShipper(req);
         }
         #endregion
     }

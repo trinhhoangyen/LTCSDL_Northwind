@@ -37,6 +37,29 @@ namespace LTCSDL.Web.Controllers
             return Ok(res);
         }
 
+
+        [HttpPost("create-shipper")]
+        public IActionResult CreateShipper(ShipperReq req)
+        {
+            var res = _svc.CreateShipper(req);
+            return Ok(res);
+        }
+
+        [HttpPost("update-shipper")]
+        public IActionResult UpdateShipper(ShipperReq req)
+        {
+            var res = _svc.UpdateShipper(req);
+            return Ok(res);
+        }
+
+
+        [HttpPost("doanh-thu-shipper-theo-thang-nam")]
+        public IActionResult DoanhThuShipper(DateReq req)
+        {
+            var res = _svc.DoanhThuShipper(req);
+            return Ok(res);
+        }
+
         private readonly ShippersSvc _svc;
     }
 }

@@ -1,8 +1,80 @@
 ﻿/*
+-- 23/6/2020
+*/
+-- Thêm
+CREATE PROC sp_AddSupplier
+(
+	@CompanyName nvarchar(40), 
+	@ContactName nvarchar(30), 
+	@ContactTitle nvarchar(30), 
+	@Address nvarchar(60),
+    @City nvarchar(15),
+    @Region nvarchar(15),
+    @PostalCode nvarchar(10),
+    @Country nvarchar(15),
+    @Phone nvarchar(24),
+    @Fax nvarchar(24),
+    @HomePage ntext
+)
+AS
+BEGIN
+	INSERT INTO Suppliers 
+	VALUES (@CompanyName, @ContactName, @ContactTitle, @Address, @City, @Region, @PostalCode, @Country, @Phone, @Fax, @HomePage)
+
+	SELECT * 
+	FROM Suppliers
+	WHERE CompanyName = @CompanyName and ContactName = @ContactName and ContactTitle = @ContactTitle
+END
+GO
+
+EXEC sp_AddSupplier 'Open University', 'Ms. Yen', 'Madam', '92560 SA Cali', '', 'LA', '700000', 'USA', '(84)912-834-740', null, 'https://www.facebook.com/trhgyen'
+GO
+-- Sửa
+CREATE PROC sp_UpdateSupplier
+(
+	@SupplierID int,
+	@CompanyName nvarchar(40), 
+	@ContactName nvarchar(30), 
+	@ContactTitle nvarchar(30), 
+	@Address nvarchar(60),
+    @City nvarchar(15),
+    @Region nvarchar(15),
+    @PostalCode nvarchar(10),
+    @Country nvarchar(15),
+    @Phone nvarchar(24),
+    @Fax nvarchar(24),
+    @HomePage ntext
+)
+AS
+BEGIN
+	UPDATE Suppliers 
+	SET CompanyName = @CompanyName, 
+		ContactName = @ContactName, 
+		ContactTitle = @ContactTitle, 
+		Address = @Address, 
+		City = @City, 
+		Region = @Region, 
+		PostalCode = @PostalCode, 
+		Country = @Country,
+		Phone = @Phone,
+		Fax = @Fax, 
+		HomePage = @HomePage
+	WHERE SupplierID = @SupplierID
+
+	SELECT * 
+	FROM Suppliers
+	WHERE SupplierID = @SupplierID
+END
+GO
+EXEC sp_UpdateSupplier 31, 'Open University', 'Ms. Yen', 'Madam', '92560 SA Cali', '', 'LA', '700000', 'USA', '(84)912-834-740', null, 'https://www.facebook.com/trhgyen'
+GO
+-- Tìm kiếm
+CREATE PROC sp_SearchSupplier( @page int, @size int, @kw nvarchar()
+/*
 -- 16/6/2020
 */
 -- Doanh thu theo quoc gia
-ALTER PROC dh_DoanhThuTheoQG( @month int, @year int)
+CREATE PROC dh_DoanhThuTheoQG( @month int, @year int)
 AS 
 BEGIN
 	SELECT c.Country, SUM(od.UnitPrice * od.Quantity * (1-od.Discount)) as DoanhThu
@@ -17,7 +89,7 @@ EXEC dh_DoanhThuTheoQG 7, 1996
 GO
 
 -- Danh sach mat hang ban chay nhat trong khoang thoi gian
-ALTER PROC dh_DSMatHangChayNhat(@page int, @size int, @month int, @year int, @isQuantity int)
+CREATE PROC dh_DSMatHangChayNhat(@page int, @size int, @month int, @year int, @isQuantity int)
 AS 
 BEGIN
 declare @begin int, @end int
@@ -61,7 +133,7 @@ EXEC dh_DSMatHangChayNhat 1, 20, 7, 1996, 0
 GO
 
 -- Danh sach don hang nhan vien theo khoang thoi gian ( co phan trang)
-alter PROC dh_DSDHNV (@page int, @size int, @keyword nvarchar(50), @dateFrom datetime, @dateTo datetime)
+CREATE PROC dh_DSDHNV (@page int, @size int, @keyword nvarchar(50), @dateFrom datetime, @dateTo datetime)
 AS
 BEGIN
 	declare @begin int, @end int
@@ -124,7 +196,7 @@ go
 - 26/5/2020
 */
 --- Lấy ds KH không phát sinh đơn hàng trong tháng năm truyền vào có phân trang
-ALTER PROC kh_NotOrderInMonthYear
+CREATE PROC kh_NotOrderInMonthYear
 (
 	@month int, @year int, @page int, @size int
 )
@@ -152,7 +224,7 @@ exec kh_NotOrderInMonthYear 7, 1996, 1, 5
 --- Lấy danh sách hóa đơn theo ngày
 set dateformat dmy
 go
-ALTER PROC DoanhThuTheoNgay
+CREATE PROC DoanhThuTheoNgay
 (
 	@Date datetime
 )
@@ -172,7 +244,7 @@ exec DoanhThuTheoNgay '5-7-1996'
 go
 
 --- Lấy danh sách hóa đơn trong khoảng thời gian truyền vô
-ALTER PROC DoanhThuTheoThoiGian
+CREATE PROC DoanhThuTheoThoiGian
 (
 	@begintime datetime, @endTime datetime
 )

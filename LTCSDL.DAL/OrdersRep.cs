@@ -311,7 +311,23 @@ namespace LTCSDL.DAL
             }
             return res;
         }
-
+        public object GetOrderDetailByOrderId_Linq(int id)
+        {
+            var res = from o in Context.Orders
+                      join od in Context.OrderDetails on o.OrderId equals od.OrderId
+                      join c in Context.Customers on o.CustomerId equals c.CustomerId
+                      join p in Context.Products on od.ProductId equals p.ProductId
+                      select new
+                      {
+                          o.OrderId,
+                          p.ProductName,
+                          o.EmployeeId,
+                          o.CustomerId,
+                          o.OrderDate,
+                          Total = od.Quantity * od.UnitPrice * (1- (decimal)od.Discount)
+                      };
+            return res;
+        }
         public List<object> GetOrderOfEmployee(OrderFullReq req)
         {
             List<object> res = new List<object>();

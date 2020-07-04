@@ -27,6 +27,46 @@ namespace LTCSDL.Web.Controllers
             res.Data = _svc.All;
             return Ok(res);
         }
+        // đề 2//2a
+
+        [HttpPost("get-order-in-space-time")]
+        public IActionResult GetOrderInSpaceTime([FromBody] OrderFullReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.GetOrderInSpaceTime(req);
+            return Ok(res);
+        }
+        [HttpPost("get-order-in-space-time-linq")]
+        public IActionResult GetOrderInSpaceTime_Linq([FromBody] OrderFullReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.GetOrderInSpaceTime_Linq(req);
+            return Ok(res);
+        }
+        //2b
+        [HttpPost("get-order-detail-by-id")]
+        public IActionResult GetOrderDetailByOrderId([FromBody] SimpleReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.GetOrderDetailByOrderId(req.Id);
+            return Ok(res);
+        }
+
+        [HttpPost("get-order-detail-by-id-linq")]
+        public IActionResult GetOrderDetailByOrderId_Linq([FromBody] SimpleReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.GetOrderDetailByOrderId_Linq(req.Id);
+            return Ok(res);
+        }
+        [HttpPost("get-order-detail-by-id-linq1")]
+        public IActionResult GetOrderDetailByOrderId_Linq1([FromBody] SimpleReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.GetOrderDetailByOrderId_Linq1(req.Id);
+            return Ok(res);
+        }
+
 
         [HttpPost("get-customer-order-history")]
         public IActionResult GetCustOrderHist(string id)
@@ -57,36 +97,6 @@ namespace LTCSDL.Web.Controllers
         {
             var res = new SingleRsp();
             res.Data = _svc.GetCustOrdersDetail_Linq(orderId);
-            return Ok(res);
-        }
-        [HttpPost("get-order-in-space-time")]
-        public IActionResult GetOrderInSpaceTime([FromBody] OrderFullReq req)
-        {
-            var res = new SingleRsp();
-            res.Data = _svc.GetOrderInSpaceTime(req);
-            return Ok(res);
-        }
-        [HttpPost("get-order-in-space-time-linq")]
-        public IActionResult GetOrderInSpaceTime_Linq([FromBody] OrderFullReq req)
-        {
-            var res = new SingleRsp();
-            res.Data = _svc.GetOrderInSpaceTime_Linq(req);
-            return Ok(res);
-        }
-        
-        [HttpPost("get-order-detail-by-id")]
-        public IActionResult GetOrderDetailByOrderId([FromBody] SimpleReq req)
-        {
-            var res = new SingleRsp();
-            res.Data = _svc.GetOrderDetailByOrderId(req.Id);
-            return Ok(res);
-        }
-
-        [HttpPost("get-order-detail-by-id-linq")]
-        public IActionResult GetOrderDetailByOrderId_Linq([FromBody] SimpleReq req)
-        {
-            var res = new SingleRsp();
-            res.Data = _svc.GetOrderDetailByOrderId_Linq(req.Id);
             return Ok(res);
         }
 

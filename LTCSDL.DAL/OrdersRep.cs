@@ -173,6 +173,12 @@ namespace LTCSDL.DAL
             return res;
         }
 
+        // đề 2
+        /// <summary>
+        /// 2a: danh sách đơn hàng
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns>danh sách đơn hàng trong khoảng thời gian</returns>
         public List<object> GetOrderInSpaceTime(OrderFullReq req)
         {
             List<object> res = new List<object>();
@@ -186,7 +192,7 @@ namespace LTCSDL.DAL
                 SqlDataAdapter da = new SqlDataAdapter();
                 DataSet ds = new DataSet();
                 var cmd = cnn.CreateCommand();
-                cmd.CommandText = "dh_DonHangTheoNgay";
+                cmd.CommandText = "dh_DonHangTheoThoiGian";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@dateFrom", req.DateFrom);
                 cmd.Parameters.AddWithValue("@dateTo", req.DateTo);
@@ -227,8 +233,7 @@ namespace LTCSDL.DAL
             }
             return res;
         }
-
-        //cos phan trang
+        // linq
         public object GetOrderInSpaceTime_Linq(OrderFullReq req)
         {
             var res = All.Where(x => x.OrderDate >= req.DateFrom && x.OrderDate <= req.DateTo);
@@ -243,21 +248,20 @@ namespace LTCSDL.DAL
                 var tam = new
                 {
                     STT = i + 1 + offSet,
-                    OrderId = item.OrderId,
-                    CustomerId = item.CustomerId,
-                    EmployeeId = item.EmployeeId,
-                    OrderDate = item.OrderDate,
-                    RequiredDate = item.RequiredDate,
-                    ShippedDate = item.ShippedDate,
-                    ShipVia = item.ShipVia,
-                    Freight = item.Freight,
-                    ShipName = item.ShipName,
-                    ShipAddress = item.ShipAddress,
-                    ShipCity = item.ShipCity,
-                    ShipRegion = item.ShipRegion,
-                    ShipPostalCode = item.ShipPostalCode,
-                    ShipCountry = item.ShipCountry
-
+                    item.OrderId,
+                    item.CustomerId,
+                    item.EmployeeId,
+                    item.OrderDate,
+                    item.RequiredDate,
+                    item.ShippedDate,
+                    item.ShipVia,
+                    item.Freight,
+                    item.ShipName,
+                    item.ShipAddress,
+                    item.ShipCity,
+                    item.ShipRegion,
+                    item.ShipPostalCode,
+                    item.ShipCountry
                 };
                 lst.Add(tam);
             }    
@@ -271,6 +275,11 @@ namespace LTCSDL.DAL
             };
         }
 
+        /// <summary>
+        /// 2b: chi tiết đơn hàng
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public List<object> GetOrderDetailByOrderId(int id)
         {
             List<object> res = new List<object>();
@@ -284,7 +293,7 @@ namespace LTCSDL.DAL
                 SqlDataAdapter da = new SqlDataAdapter();
                 DataSet ds = new DataSet();
                 var cmd = cnn.CreateCommand();
-                cmd.CommandText = "dH_ChiTietDonHang";
+                cmd.CommandText = "dh_ChiTietDonHang";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@OrderID", id);
                 da.SelectCommand = cmd;
@@ -329,6 +338,28 @@ namespace LTCSDL.DAL
                       };
             return res;
         }
+        public object GetOrderDetailByOrderId_Linq1(int id)
+        {
+            var res = Context.Products
+                    .Join(Context.OrderDetails, p => p.ProductId, od => od.ProductId, (p, od) => new
+                    {
+                        od.OrderId,
+                        p.ProductName,
+                        Total = od.Quantity * od.UnitPrice * (1 - (decimal)od.Discount)
+                    })
+                    .Where(x=>x.OrderId == id)
+                    .Join(Context.Orders, od => od.OrderId, o => o.OrderId, (od, o) => new
+                    {
+                        o.OrderId,
+                        o.EmployeeId,
+                        o.CustomerId,
+                        o.OrderDate,
+                        od.ProductName,
+                        od.Total
+                    });
+            return res;
+        }
+
         public List<object> GetOrderOfEmployee(OrderFullReq req)
         {
             List<object> res = new List<object>();

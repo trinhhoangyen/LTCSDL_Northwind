@@ -216,42 +216,6 @@ exec dh_DSDHNV 1, 5, 'Davolio', '1996-07-06', '1996-09-09'
 go
 
 /*
--- 9/6/2020
-*/
---- Lấy danh sách đơn hàng theo thời gian nhập vô có phân trang
-CREATE PROC dh_DonHangTheoNgay ( @dateFrom datetime, @dateTo datetime, @page int, @size int)
-AS 
-BEGIN
-	declare @begin int, @end int
-	set @end = @page * @size
-	set @begin = @end - @size + 1
-	;with tam as(
-		select ROW_NUMBER() over(order by OrderID) AS STT, * 
-		from Orders 
-		where OrderDate between @dateFrom and @dateTo)
-
-		select * from tam where STT between @begin and @end
-END
-GO
-exec dh_DonHangTheoNgay '6/7/1996', '9/7/1996', 1, 5
-go
-
---- Chi tiết đơn hàng
-CREATE PROC dH_ChiTietDonHang( @OrderID int)
-AS
-BEGIN
-	SELECT o.OrderID, p.ProductName, o.CustomerID, o.EmployeeID, o.OrderDate ,
-	Total=ROUND(Convert(money, od.Quantity * (1 - od.Discount) * od.UnitPrice), 2)
-	FROM Orders o, [Order Details] od, Products p
-	WHERE o.OrderID = od.OrderID 
-		AND od.ProductID = p.ProductID
-		AND o.OrderID = @OrderID
-END
-GO
-exec dH_ChiTietDonHang 10248
-go
-
-/*
 - 26/5/2020
 */
 --- Lấy ds KH không phát sinh đơn hàng trong tháng năm truyền vào có phân trang
@@ -277,33 +241,62 @@ END
 GO
 exec kh_NotOrderInMonthYear 7, 1996, 1, 5
 
-/*
+/* Đề 2
+-- 9/6/2020
+*/
+--- 2a. Lấy danh sách đơn hàng theo thời gian nhập vô có phân trang
+CREATE PROC dh_DonHangTheoThoiGian ( @dateFrom datetime, @dateTo datetime, @page int, @size int)
+AS 
+BEGIN
+	declare @begin int, @end int
+	set @end = @page * @size
+	set @begin = @end - @size + 1
+	;with tam as(
+		select ROW_NUMBER() over(order by OrderID) AS STT, * 
+		from Orders 
+		where OrderDate between @dateFrom and @dateTo)
+
+	select * from tam where STT between @begin and @end
+END
+GO
+exec dh_DonHangTheoThoiGian '1996-07-06', '1996-07-09', 1, 5
+go
+
+--- 2b. Chi tiết đơn hàng
+CREATE PROC dh_ChiTietDonHang( @OrderID int)
+AS
+BEGIN
+	SELECT o.OrderID, p.ProductName, o.CustomerID, o.EmployeeID, o.OrderDate ,
+	Total=ROUND(Convert(money, od.Quantity * (1 - od.Discount) * od.UnitPrice), 2)
+	FROM Orders o, [Order Details] od, Products p
+	WHERE o.OrderID = od.OrderID 
+		AND od.ProductID = p.ProductID
+		AND o.OrderID = @OrderID
+END
+GO
+exec dh_ChiTietDonHang 10248
+go
+
+/* Đề 1
 - 2/6/2020
 */
---- Lấy danh sách hóa đơn theo ngày
-set dateformat dmy
-go
-CREATE PROC DoanhThuTheoNgay
-(
-	@Date datetime
-)
+--- 1a. Lấy danh sách hóa đơn theo ngày
+alter PROC nv_DoanhThuNVTheoNgay( @Date datetime )
 AS
 BEGIN
 	SELECT e.EmployeeID, e.LastName, e.FirstName, 
 			sum(od.UnitPrice * od.Quantity * (1-od.Discount)) as DoanhThu 
 	FROM Employees e inner join Orders o on e.EmployeeID = o.EmployeeID
 					inner join [Order Details] od on o.OrderID = od.OrderID
-	WHERE MONTH(@Date) = MONTH(o.OrderDate) and
-			DAY(@Date) = DAY(o.OrderDate) and
-			YEAR(@Date) = YEAR(o.OrderDate)
+	WHERE o.OrderDate = @Date
 	GROUP BY e.EmployeeID, e.LastName, e.FirstName
 END
 GO
-exec DoanhThuTheoNgay '5-7-1996'
+exec nv_DoanhThuNVTheoNgay '1996-07-05'
 go
 
---- Lấy danh sách hóa đơn trong khoảng thời gian truyền vô
-CREATE PROC DoanhThuTheoThoiGian
+--- 1b. Lấy danh sách hóa đơn trong khoảng thời gian truyền vô
+CREATE PROC nv_DoanhThuNVTheoThoiGian
 (
 	@begintime datetime, @endTime datetime
 )
@@ -316,5 +309,5 @@ BEGIN
 	group BY e.EmployeeID, e.LastName, e.FirstName
 END
 GO
-exec DoanhThuTheoThoiGian '7/6/1997', '7/9/1997'
+exec nv_DoanhThuNVTheoThoiGian '1997-07-06', '1997-07-09'
 go

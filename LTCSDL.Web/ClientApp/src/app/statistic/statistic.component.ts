@@ -17,12 +17,10 @@ export class StatisticComponent{
   constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string) { }
   onShowTable() {
     this.isTable = true;
-    console.log(this.dateTo)
     this.dateReq = {
       dateFrom: this.dateFrom,
       dateTo : this.dateTo
     }
-    console.log(this.dateReq)
     this.http.post('https://localhost:44380/' + 'api/Products/quantity-products-in-order', this.dateReq).subscribe(result => {
       var res: any = result;
       console.log(result)

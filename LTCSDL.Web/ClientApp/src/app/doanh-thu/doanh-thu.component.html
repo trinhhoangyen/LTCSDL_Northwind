@@ -1,26 +1,56 @@
-<h1>Doanh thu</h1>
+<h1 class="mb-3">Doanh thu</h1>
+<div class="row mb-3">
+    Theo ngày:
+    <input type="date" class="col col-2 form-control mx-3" [(ngModel)]="Date"/>
+    <button class="col col-1 btn btn-success form-control" (click)="TraCuuDTNVTheoNgay()">Xem</button>
+    <div class="col col-1"></div>
 
-<div class="row">
-    <label class="col-3">Nhập ngày: </label>
-    <input type="date" class="col-4 form-control" [(ngModel)]="ngayTraCuu" style="margin-right: 10px;"/>
-    <button class="btn btn-success form-control col-2" (click)="TraCuuDTNVTheoNgay()">Tra cứu</button>
+    Từ:
+    <input type="date" class="col-2 form-control mx-3" [(ngModel)]="DateFrom" style="margin-right: 0px;"/>
+    Đến:
+    <input type="date" class="col col-2 form-control mx-3" [(ngModel)]="DateTo" style="margin-right: 0px;"/>
+    <button class="col col-1 btn btn-success form-control" (click)="TraCuuDTNVTheoThoiGian()">Xem</button>
 </div>
 
-<table class="table table-bordered" style="margin-top: 10px;">
-    <thead>
-        <tr>
-            <th>Employee ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Doanh Thu</th>
-        </tr>
-    </thead>
-    <tbody *ngFor="let item of lstDoanhThu;">
-        <tr>
-            <td>{{item.employeeID}}</td>
-            <td>{{item.firstName}}</td>
-            <td>{{item.lastName}}</td>
-            <td>{{item.doanhThu}}</td>
-        </tr>
-    </tbody>
-</table>
+<div class="row">
+    <div class="col col-5">
+        <div *ngIf="isLeft">
+            <h6>Doanh thu trong ngày {{Date}}</h6>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Mã nhân viên</th>
+                        <th>Tên</th>
+                        <th>Doanh Thu</th>
+                    </tr>
+                </thead>
+                <tbody *ngFor="let item of tableLeft;">
+                    <tr>
+                        <td>{{item.employeeID}}</td>
+                        <td>{{item.name}}</td>
+                        <td>{{item.doanhThu}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col col-7" *ngIf="isRight">
+        <h6>Doanh thu từ ngày {{DateFrom}} đến ngày {{DateTo}}</h6>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Mã nhân viên</th>
+                    <th>Tên</th>
+                    <th>Doanh Thu</th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let item of tableRight;">
+                <tr>
+                    <td>{{item.employeeID}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.doanhThu}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

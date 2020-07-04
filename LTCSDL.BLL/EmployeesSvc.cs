@@ -9,19 +9,29 @@ using System.Text;
 namespace LTCSDL.BLL
 {
     public class EmployeesSvc : GenericSvc<EmployeesRep, Employees>
-    {
-        public object DoanhThuTheoNgay(DateTime date)
+    {// 1a
+        public object DoanhThuNVTheoNgay(DateTime date)
         {
-            return _rep.DoanhThuTheoNgay(date);
+            return _rep.DoanhThuNVTheoNgay(date);
         }
-        //public object DoanhThuTheoNgay_Linq(DateTime date)
-        //{
-        //    var res = _rep.DoanhThuTheoNgay_Linq(date);
-        //    return res;
-        //}
-        public object DoanhThuTheoThoiGian(OrderFullReq req)
+        public object DoanhThuNVTheoNgay_Linq(DateTime date)
         {
-            return _rep.DoanhThuTheoThoiGian(req);
+            var res = _rep.DoanhThuNVTheoNgay_Linq(date);
+            return res;
+        }
+        public object DoanhThuNVTheoNgay_Linq1(DateTime date)
+        {
+            var res = _rep.DoanhThuNVTheoNgay_Linq1(date);
+            return res;
+        }
+        // 1b
+        public object DoanhThuNVTheoThoiGian(TimeReq req)
+        {
+            return _rep.DoanhThuNVTheoThoiGian(req);
+        }
+        public object DoanhThuNVTheoThoiGian_Linq(TimeReq req)
+        {
+            return _rep.DoanhThuNVTheoThoiGian_Linq(req);
         }
     }
 }

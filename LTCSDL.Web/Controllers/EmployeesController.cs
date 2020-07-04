@@ -21,27 +21,41 @@ namespace LTCSDL.Web.Controllers
 
         private readonly EmployeesSvc _svc;
 
-        [HttpPost("get-dtnv-trong-ngay")]
-        public IActionResult DoanhThuTheoNgay([FromBody] OrderFullReq req)
+        [HttpPost("doanh-thu-nv-theo-ngay")]
+        public IActionResult DoanhThuNVTheoNgay([FromBody] TimeReq req)
         {
             var res = new SingleRsp();
-            res.Data = _svc.DoanhThuTheoNgay(req.DateFrom);
+            res.Data = _svc.DoanhThuNVTheoNgay(req.DateFrom);
             return Ok(res);
         }
 
-        //[HttpPost("get-dtnv-trong-ngay-linq")]
-        //public IActionResult DoanhThuTheoNgay_Linq([FromBody] DatetimeReq req)
-        //{
-        //    var res = new SingleRsp();
-        //    res.Data = _svc.DoanhThuTheoNgay_Linq(req.BeginTime);
-        //    return Ok(res);
-        //}
+        [HttpPost("doanh-thu-nv-theo-ngay-linq")]
+        public IActionResult DoanhThuNVTheoNgay_Linq([FromBody] TimeReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.DoanhThuNVTheoNgay_Linq(req.DateFrom);
+            return Ok(res);
+        }
+        [HttpPost("doanh-thu-nv-theo-ngay-linq1")]
+        public IActionResult DoanhThuNVTheoNgay_Linq1([FromBody] TimeReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.DoanhThuNVTheoNgay_Linq1(req.DateFrom);
+            return Ok(res);
+        }
 
-        [HttpPost("get-doanh-thu-theo-thoi-gian")]
-        public IActionResult DoanhThuTheoThoiGian([FromBody] OrderFullReq req)
+        [HttpPost("doanh-thu-nv-theo-thoi-gian")]
+        public IActionResult DoanhThuNVTheoThoiGian([FromBody] TimeReq req)
         {
             var res = new SingleRsp(); 
-            res.Data =_svc.DoanhThuTheoThoiGian(req);
+            res.Data =_svc.DoanhThuNVTheoThoiGian(req);
+            return Ok(res);
+        }
+        [HttpPost("doanh-thu-nv-theo-thoi-gian-linq")]
+        public IActionResult DoanhThuNVTheoThoiGian_Linq([FromBody] TimeReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.DoanhThuNVTheoThoiGian_Linq(req);
             return Ok(res);
         }
     }

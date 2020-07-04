@@ -24,6 +24,34 @@ namespace LTCSDL.BLL
         }
         #endregion
 
+        #region Method
+        // đề 2
+        //2a
+        public List<object> GetOrderInSpaceTime(OrderFullReq req)
+        {
+            List<object> res = new List<object>();
+            res = _rep.GetOrderInSpaceTime(req);
+            return res;
+        }
+        public object GetOrderInSpaceTime_Linq(OrderFullReq req)
+        {
+            return _rep.GetOrderInSpaceTime_Linq(req);
+        }
+        //2b
+        public List<object> GetOrderDetailByOrderId(int id)
+        {
+            return _rep.GetOrderDetailByOrderId(id);
+        }
+        public object GetOrderDetailByOrderId_Linq(int id)
+        {
+            return _rep.GetOrderDetailByOrderId_Linq(id);
+        }
+        public object GetOrderDetailByOrderId_Linq1(int id)
+        {
+            return _rep.GetOrderDetailByOrderId_Linq1(id);
+        }
+
+
         public SingleRsp Createordduct(OrderReq ord)
         {
             var res = new SingleRsp();
@@ -103,25 +131,6 @@ namespace LTCSDL.BLL
             res = _rep.GetCustOrdersDetail_Linq1(orderId);
             return res;
         }
-
-        public List<object> GetOrderInSpaceTime(OrderFullReq req)
-        {
-            List<object> res = new List<object>();
-            res = _rep.GetOrderInSpaceTime(req);
-            return res;
-        }
-        public object GetOrderInSpaceTime_Linq(OrderFullReq req)
-        {
-            return _rep.GetOrderInSpaceTime_Linq(req);
-        }
-        public List<object> GetOrderDetailByOrderId(int id)
-        {
-            return _rep.GetOrderDetailByOrderId(id);
-        }
-        public object GetOrderDetailByOrderId_Linq(int id)
-        {
-            return _rep.GetOrderDetailByOrderId_Linq(id);
-        }
         public object GetOrderOfEmployee(OrderFullReq req)
         {
             return _rep.GetOrderOfEmployee(req);
@@ -147,5 +156,6 @@ namespace LTCSDL.BLL
         {
             return _rep.OrdersInDay(req);
         }
+        #endregion
     }
 }

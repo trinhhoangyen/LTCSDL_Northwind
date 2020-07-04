@@ -106,5 +106,15 @@ namespace LTCSDL.BLL
             };
             return product;
         }
+
+        public List<object> ProductNotOrder(GetProductReq req)
+        {
+            return _rep.ProductNotOrder(req);
+        }
+
+        public object QuantityProducts(TimeReq req)
+        {
+            return _rep.QuantityProducts(req);
+        }
     }
 }

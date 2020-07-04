@@ -228,6 +228,7 @@ namespace LTCSDL.DAL
             return res;
         }
 
+        //cos phan trang
         public object GetOrderInSpaceTime_Linq(OrderFullReq req)
         {
             var res = All.Where(x => x.OrderDate >= req.DateFrom && x.OrderDate <= req.DateTo);
@@ -311,7 +312,23 @@ namespace LTCSDL.DAL
             }
             return res;
         }
-
+        public object GetOrderDetailByOrderId_Linq(int id)
+        {
+            var res = from o in Context.Orders
+                      join od in Context.OrderDetails on o.OrderId equals od.OrderId
+                      join p in Context.Products on od.ProductId equals p.ProductId
+                      where o.OrderId == id
+                      select new
+                      {
+                          o.OrderId,
+                          p.ProductName,
+                          o.EmployeeId,
+                          o.CustomerId,
+                          o.OrderDate,
+                          Total = od.Quantity * od.UnitPrice * (1 - (decimal)od.Discount)
+                      };
+            return res;
+        }
         public List<object> GetOrderOfEmployee(OrderFullReq req)
         {
             List<object> res = new List<object>();
@@ -512,6 +529,93 @@ namespace LTCSDL.DAL
             }).Where(x => x.OrderDate.Value.Month == req.Month && x.OrderDate.Value.Year == req.Year).ToList();
 
             return res;
+        }
+
+        public object SearchOrder(SearchReq req)
+        {
+            List<object> res = new List<object>();
+            var cnn = (SqlConnection)Context.Database.GetDbConnection();
+            if (cnn.State == ConnectionState.Closed)
+            {
+                cnn.Open();
+            }
+            try
+            {
+                SqlDataAdapter da = new SqlDataAdapter();
+                DataSet ds = new DataSet();
+                var cmd = cnn.CreateCommand();
+                cmd.CommandText = "or_SearchOrder";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@keyword", req.Keyword);
+                cmd.Parameters.AddWithValue("@page", req.Page);
+                cmd.Parameters.AddWithValue("@size", req.Size);
+                da.SelectCommand = cmd;
+                da.Fill(ds);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        var x = new
+                        {
+                            OrderId = row["OrderId"],
+                            CustomerId = row["CustomerId"],
+                            EmployeeName = row["FirstNameEmplpyee"].ToString() + row["LastNameEmployee"].ToString(),
+                            CompanyName = row["CompanyName"],
+                            OrderDate = row["OrderDate"],
+                            RequiredDate = row["RequiredDate"],
+                            ShippedDate = row["ShippedDate"]
+
+                        };
+                        res.Add(x);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                res = null;
+            }
+            return res;
+        }
+
+        public object OrdersInDay(OrderTodayReq req)
+        {
+            var res = from o in Context.Orders
+                      join c in Context.Customers on o.CustomerId equals c.CustomerId
+                      where o.OrderDate == req.Date
+                      select new
+                      {
+                          o.OrderId,
+                          o.OrderDate,
+                          c.ContactName,
+                          o.ShipAddress
+                      };
+            var offSet = (req.Page - 1) * req.Size;
+            var total = res.Count();
+            int totalPage = (total % req.Size) == 0 ? (int)(total / req.Size) : ((int)(total / req.Size) + 1);
+            var data = res.OrderBy(x => x.OrderDate).Skip(offSet).Take(req.Size).ToList();
+            List<object> lst = new List<object>();
+            for (int i = 0; i < data.Count(); i++)
+            {
+                var item = data[i];
+                var tam = new
+                {
+                    STT = i + 1 + offSet,
+                    OrderId = item.OrderId,
+                    OrderDate = item.OrderDate,
+                    ContactName = item.ContactName,
+                    ShipAddress = item.ShipAddress
+
+                };
+                lst.Add(tam);
+            }
+            return new
+            {
+                Data = lst,
+                TotalRecords = total,
+                Page = req.Page,
+                Size = req.Size,
+                TotalPages = totalPage
+            };
         }
         #endregion
     }

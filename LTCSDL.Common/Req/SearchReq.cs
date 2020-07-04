@@ -4,12 +4,10 @@ using System.Text;
 
 namespace LTCSDL.Common.Req
 {
-    public class SearchProductReq
+    public class SearchReq
     {
         public int Page { set; get; }
         public int Size { set; get; }
-        public int Id { set; get; }
-        public string Type { set; get; }
         public string Keyword { set; get; }
     }
 }

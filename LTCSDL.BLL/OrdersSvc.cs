@@ -118,6 +118,10 @@ namespace LTCSDL.BLL
         {
             return _rep.GetOrderDetailByOrderId(id);
         }
+        public object GetOrderDetailByOrderId_Linq(int id)
+        {
+            return _rep.GetOrderDetailByOrderId_Linq(id);
+        }
         public object GetOrderOfEmployee(OrderFullReq req)
         {
             return _rep.GetOrderOfEmployee(req);
@@ -134,6 +138,14 @@ namespace LTCSDL.BLL
         public object DoanhThuTheoQG(OrderFullReq req)
         {
             return _rep.DoanhThuTheoQG(req);
+        }
+        public object SearchOrder(SearchReq req)
+        {
+            return _rep.SearchOrder(req);
+        }
+        public object OrdersInDay(OrderTodayReq req)
+        {
+            return _rep.OrdersInDay(req);
         }
     }
 }

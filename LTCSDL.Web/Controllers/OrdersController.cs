@@ -82,6 +82,14 @@ namespace LTCSDL.Web.Controllers
             return Ok(res);
         }
 
+        [HttpPost("get-order-detail-by-id-linq")]
+        public IActionResult GetOrderDetailByOrderId_Linq([FromBody] SimpleReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.GetOrderDetailByOrderId_Linq(req.Id);
+            return Ok(res);
+        }
+
         [HttpPost("get-order-of-employee")]
         public IActionResult GetOrderOfEmployee([FromBody] OrderFullReq req)
         {
@@ -110,6 +118,22 @@ namespace LTCSDL.Web.Controllers
         {
             var res = new SingleRsp();
             res.Data = _svc.DoanhThuTheoQG(req);
+            return Ok(res);
+        }
+
+        [HttpPost("tim-dh")]
+        public IActionResult SearchOrder([FromBody] SearchReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.SearchOrder(req);
+            return Ok(res);
+        }
+
+        [HttpPost("get-orders-in-day")]
+        public IActionResult OrdersInDay([FromBody] OrderTodayReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.OrdersInDay(req);
             return Ok(res);
         }
         private readonly OrdersSvc _svc;

@@ -14,6 +14,7 @@ import { ProductComponent } from './product/product.component';
 import { DoanhThuComponent } from './doanh-thu/doanh-thu.component';
 import { OrderComponent } from './order/order.component';
 import { ShipperComponent } from './shipper/shipper.component';
+import { StatisticComponent } from './statistic/statistic.component';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { ShipperComponent } from './shipper/shipper.component';
     ProductComponent,
     DoanhThuComponent,
     OrderComponent,
-    ShipperComponent
+    ShipperComponent,
+    StatisticComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -41,7 +43,8 @@ import { ShipperComponent } from './shipper/shipper.component';
       { path: 'product', component: ProductComponent },
       { path: 'doanh-thu', component: DoanhThuComponent },
       { path: 'order', component: OrderComponent },
-      { path: 'shipper', component: ShipperComponent }
+      { path: 'shipper', component: ShipperComponent },
+      { path: 'statistic', component: StatisticComponent }
     ])
   ],
   providers: [],

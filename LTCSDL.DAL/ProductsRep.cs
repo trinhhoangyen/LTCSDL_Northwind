@@ -1,8 +1,12 @@
 ﻿using LTCSDL.Common.DAL;
+using LTCSDL.Common.Req;
 using LTCSDL.Common.Rsp;
 using LTCSDL.DAL.Models;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -50,7 +54,6 @@ namespace LTCSDL.DAL
             }    
             return res;
         }
-
         public SingleRsp UpdateProduct(Products pro)
         {
             var res = new SingleRsp();
@@ -74,6 +77,74 @@ namespace LTCSDL.DAL
                 }
             }
             return res;
+        }
+        public List<object> ProductNotOrder(GetProductReq req)
+        {
+            List<object> res = new List<object>();
+            var cnn = (SqlConnection)Context.Database.GetDbConnection();
+            if (cnn.State == ConnectionState.Closed)
+            {
+                cnn.Open();
+            }
+            try
+            {
+                SqlDataAdapter da = new SqlDataAdapter();
+                DataSet ds = new DataSet();
+                var cmd = cnn.CreateCommand();
+                cmd.CommandText = "pr_ProductsNotOrder";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@date", req.Date);
+                cmd.Parameters.AddWithValue("@page", req.Page);
+                cmd.Parameters.AddWithValue("@size", req.Size);
+                da.SelectCommand = cmd;
+                da.Fill(ds);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        var x = new
+                        {
+                            STT = row["STT"],
+                            ProductId = row["ProductId"],
+                            ProductName = row["ProductName"],
+                            SupplierId = row["SupplierId"],
+                            CategoryId = row["CategoryId"],
+                            QuantityPerUnit = row["QuantityPerUnit"],
+                            UnitPrice = row["UnitPrice"],
+                            UnitsInStock = row["UnitsInStock"],
+                            UnitsOnOrder = row["UnitsOnOrder"],
+                            ReorderLevel = row["ReorderLevel"],
+                            Discontinued = row["Discontinued"]
+
+                        };
+                        res.Add(x);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                res = null;
+            }
+            return res;
+        }
+
+        public object QuantityProducts(TimeReq req)
+        {
+            var res = Context.Orders.Join(Context.OrderDetails, a => a.OrderId, b => b.OrderId, (a, b) => new
+            {
+                a.OrderId,
+                a.OrderDate,
+                a.ShippedDate,
+                b.Quantity
+            }).Where(x => x.OrderDate >= req.DateFrom && x.OrderDate <= req.DateTo && x.ShippedDate == null).ToList();
+
+            var data = res.GroupBy(x => x.OrderDate)
+                .Select(x => new
+                {
+                    OrderDate = x.First().OrderDate,
+                    SoLuong = x.Sum(x => x.Quantity)
+                }).ToList();
+            return data;
         }
         #endregion
     }

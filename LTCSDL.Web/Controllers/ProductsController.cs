@@ -45,7 +45,7 @@ namespace LTCSDL.Web.Controllers
         }
 
         [HttpPost("search-products")]
-        public IActionResult SearchProducts([FromBody]SearchProductReq req)
+        public IActionResult SearchProducts([FromBody] SearchReq req)
         {
             var res = new SingleRsp();
             var pros = _svc.SearchProduct(req.Keyword, req.Page, req.Size);
@@ -64,6 +64,20 @@ namespace LTCSDL.Web.Controllers
         public IActionResult UpdateProduct([FromBody]ProductsReq req)
         {
             var res = _svc.UpdateProduct(req);
+            return Ok(res);
+        }
+
+        [HttpPost("get-product-not-order-in-aday")]
+        public IActionResult ProductNotOrder([FromBody] GetProductReq req)
+        {
+            var res = _svc.ProductNotOrder(req);
+            return Ok(res);
+        }
+
+        [HttpPost("quantity-products-in-order")]
+        public IActionResult QuantityProducts([FromBody] TimeReq req)
+        {
+            var res = _svc.QuantityProducts(req);
             return Ok(res);
         }
 

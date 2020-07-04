@@ -1,8 +1,70 @@
 ﻿/*
+-- 30/6/2020
+*/
+-- Tìm kiếm Order theo CompanyName, EmployeeName
+CREATE PROC or_SearchOrder(@keyword nvarchar(50), @page int, @size int)
+AS
+BEGIN
+	declare @begin int, @end int
+	set @end = @page * @size
+	set @begin = @end - @size + 1
+
+	;with tam as(
+		SELECT ROW_NUMBER() OVER(ORDER BY OrderID) AS STT, 
+			o.*, e.FirstName as FirstNameEmplpyee, e.LastName as LastNameEmployee,  s.CompanyName
+		FROM Orders o, Employees e, Shippers s
+		WHERE o.EmployeeID = e.EmployeeID 
+			and o.ShipVia = s.ShipperID
+			and e.FirstName like '%' + @keyword + '%'
+			or e.LastName like '%' + @keyword + '%'
+			or s.CompanyName like '%' + @keyword + '%'
+	)
+	select * from tam where STT between @begin and @end
+END
+GO
+EXEC or_SearchOrder 'Speedy Express', 1, 5
+GO
+-- Sản phẩm không còn tồn kho
+CREATE PROC sp_SPKhongCoTonKho (@page int, @size int)
+AS
+BEGIN
+	declare @begin int, @end int
+	set @end = @page * @size
+	set @begin = @end - @size + 1
+
+	;with tam as(
+		SELECT ROW_NUMBER() OVER(ORDER BY ProductID) AS STT, * FROM Products
+		WHERE UnitsInStock = 0
+	)
+	select * from tam where STT between @begin and @end
+END
+GO
+exec sp_SPKhongCoTonKho 1, 5
+GO
+-- Sản phẩm không có đơn hàng trong ngày
+CREATE PROC pr_ProductsNotOrder (@date datetime, @page int, @size int)
+AS
+BEGIN
+	declare @begin int, @end int
+	set @end = @page * @size
+	set @begin = @end - @size + 1
+
+	;with tam as(
+		SELECT ROW_NUMBER() OVER(ORDER BY ProductID) AS STT, * FROM Products
+		WHERE ProductId NOT IN (
+			SELECT ProductId FROM Orders
+			WHERE OrderDate = @date
+		))
+	select * from tam where STT between @begin and @end
+END
+GO
+exec pr_ProductsNotOrder '2020/07/01', 1, 5
+GO
+/*
 -- 23/6/2020
 */
 -- Thêm
-CREATE PROC sp_AddSupplier
+CREATE PROC ncc_AddSupplier
 (
 	@CompanyName nvarchar(40), 
 	@ContactName nvarchar(30), 
@@ -30,7 +92,7 @@ GO
 EXEC sp_AddSupplier 'Open University', 'Ms. Yen', 'Madam', '92560 SA Cali', '', 'LA', '700000', 'USA', '(84)912-834-740', null, 'https://www.facebook.com/trhgyen'
 GO
 -- Sửa
-CREATE PROC sp_UpdateSupplier
+CREATE PROC ncc_UpdateSupplier
 (
 	@SupplierID int,
 	@CompanyName nvarchar(40), 
@@ -69,7 +131,7 @@ GO
 EXEC sp_UpdateSupplier 31, 'Open University', 'Ms. Yen', 'Madam', '92560 SA Cali', '', 'LA', '700000', 'USA', '(84)912-834-740', null, 'https://www.facebook.com/trhgyen'
 GO
 -- Tìm kiếm
-CREATE PROC sp_SearchSupplier( @page int, @size int, @kw nvarchar()
+--CREATE PROC ncc_SearchSupplier( @page int, @size int, @kw nvarchar()
 /*
 -- 16/6/2020
 */
@@ -84,7 +146,6 @@ BEGIN
 	GROUP BY c.Country
 END
 GO
-
 EXEC dh_DoanhThuTheoQG 7, 1996
 GO
 
@@ -92,7 +153,7 @@ GO
 CREATE PROC dh_DSMatHangChayNhat(@page int, @size int, @month int, @year int, @isQuantity int)
 AS 
 BEGIN
-declare @begin int, @end int
+	declare @begin int, @end int
 	set @end = @page * @size
 	set @begin = @end - @size + 1
 
@@ -128,7 +189,6 @@ declare @begin int, @end int
 		End
 END
 GO
-
 EXEC dh_DSMatHangChayNhat 1, 20, 7, 1996, 0
 GO
 
@@ -152,7 +212,6 @@ BEGIN
 	SELECT * FROM tam WHERE STT between @begin and @end
 END
 GO
-
 exec dh_DSDHNV 1, 5, 'Davolio', '1996-07-06', '1996-09-09'
 go
 

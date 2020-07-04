@@ -1,0 +1,33 @@
+<p>Danh sách hàng hóa cần giao trong ngày</p>
+<div>
+    <div class="row mb-3">
+        <label class="col-2 ml-5">Từ ngày: </label>
+        <input class="col-7" type="date" class="col-4 form-control" [(ngModel)]="dateFrom"
+            style="margin-right: 10px;" />
+    </div>
+    <div class="row mb-3">
+        <label class="col-2 ml-5">Đến ngày: </label>
+        <input class="col-7" type="date" class="col-4 form-control" [(ngModel)]="dateTo" style="margin-right: 10px;" />
+    </div>
+    <button class="col col-3 btn btn-primary form-control mr-3" (click)="onShowTable()">Xem table</button>
+    <button class="col col-3 btn btn-primary form-control" (click)="onShowChart()">Xem Bar Chart</button>
+</div>
+
+<!-- table -->
+<table *ngIf="isTable" class="table table-striped mt-10">
+    <thead>
+        <tr>
+            <th>Ngày </th>
+            <th>Số lượng</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let item of list">
+            <td>{{item.orderDate}}</td>
+            <td>{{item.soLuong}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- bar chart -->
+<div *ngIf="!isTable" id="barchart_values" style="width: 900px; height: 300px;"></div>

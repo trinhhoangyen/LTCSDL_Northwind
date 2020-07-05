@@ -26,7 +26,11 @@ namespace LTCSDL.DAL
         }
         #endregion
 
-        #region Methods
+        #region Methods        
+        /// <summary> đề 3 câu 3
+        /// </summary>
+        /// <param name="ship"></param>
+        /// <returns></returns>
         public SingleRsp CreateShipper(Shippers ship)
         {
             var res = new SingleRsp();

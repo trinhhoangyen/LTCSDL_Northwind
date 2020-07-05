@@ -1,57 +1,71 @@
-<h1>Hóa đơn</h1>
+<h3 class="mb-5">Quản lý đơn hàng</h3>
 
-<div>
-    <div class="row mb-3">
-        <label class="col-2 ml-5">Từ ngày: </label>
-        <input class="col-7" type="date" class="col-4 form-control" [(ngModel)]="dateFrom" style="margin-right: 10px;"/>
+
+<div class="row">
+    <div class="col col-6">
+        <div class="row">
+            Từ:
+            <input type="date" class="col-4 mx-1 form-control" [(ngModel)]="dateFrom"/>
+            Đến:
+            <input type="date" class="col-4 mx-1 form-control" [(ngModel)]="dateTo"/> 
+            <button class="btn btn-success form-control col-2" (click)="XemDSDH()">Xem</button> 
+        </div>
     </div>
-    <div class="row mb-3">
-        <label class="col-2 ml-5">Đến ngày: </label>
-        <input class="col-7" type="date" class="col-4 form-control" [(ngModel)]="dateTo" style="margin-right: 10px;"/>  
-    </div>
-    <div class="row">
-        <div class="col-3"></div>
-        <button class="btn btn-success form-control col-2" (click)="TraCuu()">Tra cứu</button>
+    <div class="col col-6">
+        <div class="row">
+            <div class="col col-2"></div>
+            Mã đơn hàng:
+            <input type="number" class="col-3 mx-2 form-control" [(ngModel)]="orderId"/>
+            <button class="btn btn-success form-control col-2" (click)="TraCuu()">Tra cứu</button> 
+        </div>
     </div>
 </div>
-
-<table class="table table-striped" style="margin-top: 10px;">
-    <thead>
-        <tr>
-            <th>STT</th>
-            <th>OrderID</th>
-            <th>CustomerID</th>
-            <th>EmployeeID</th>
-            <th>Freight</th>
-            <th>OrderDate</th>
-            <th>RequiredDate</th>
-            <th>ShipAddress</th>
-            <th>ShipCity</th>
-            <th>ShipCountry</th>
-            <th>ShipName</th>
-            <th>ShipPostalCode</th>
-            <th>ShipRegion</th>
-            <th>ShipVia</th>
-            <th>ShippedDate</th>
-        </tr>
-    </thead>
-    <tbody *ngFor="let item of list">
-        <tr>
-            <td>{{item.stt}}</td>
-            <td>{{item.orderId}}</td>
-            <td>{{item.customerId}}</td>
-            <td>{{item.employeeId}}</td>
-            <td>{{item.freight}}</td>
-            <td>{{item.orderDate}}</td>
-            <td>{{item.requiredDate}}</td>
-            <td>{{item.shipAddress}}</td>
-            <td>{{item.shipCity}}</td>
-            <td>{{item.shipCountry}}</td>
-            <td>{{item.shipName}}</td>
-            <td>{{item.shipPostalCode}}</td>
-            <td>{{item.shipRegion}}</td>
-            <td>{{item.shipVia}}</td>
-            <td>{{item.shippedDate}}</td>
-        </tr>
-    </tbody>
-</table>
+<hr>
+<div class="row mt-4">
+    <div class="col col-5">
+        <p>Đơn hàng từ ngày {{dateFrom | date :  "dd-MM-y" }} đến ngày {{dateTo | date :  "dd-MM-y" }}</p>
+        <table class="table table-striped" style="margin-top: 10px;">
+            <thead>
+                <tr>
+                    <th>Mã đơn hàng</th>
+                    <th>Khách hàng</th>
+                    <th>Nhân viên</th>
+                    <th>Ngày xuất</th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let item of listOrder">
+                <tr>
+                    <td>{{item.orderId}}</td>
+                    <td>{{item.customerId}}</td>
+                    <td>{{item.employeeId}}</td>
+                    <td>{{ item.orderDate | date :  "dd-MM-y" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col col-1"></div>
+    <div class="col col-6"><p>Chi tiết đơn hàng {{orderId}}</p>
+        <table class="table table-striped" style="margin-top: 10px;">
+            <thead>
+                <tr>
+                    <th>Mã đơn hàng</th>
+                    <th>Khách hàng</th>
+                    <th>Nhân viên</th>
+                    <th>Ngày xuất</th>
+                    <th>Sản phẩm</th>
+                    <th>Tổng tiền</th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let item of listOrderDetail">
+                <tr>
+                    <td>{{item.orderId}}</td>
+                    <td>{{item.customerId}}</td>
+                    <td>{{item.employeeId}}</td>
+                    <td>{{item.orderDate | date :  "dd-MM-y" }}</td>
+                    <td>{{item.productName}}</td>
+                    <td>{{item.total}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

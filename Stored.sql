@@ -130,27 +130,61 @@ END
 GO
 EXEC sp_UpdateSupplier 31, 'Open University', 'Ms. Yen', 'Madam', '92560 SA Cali', '', 'LA', '700000', 'USA', '(84)912-834-740', null, 'https://www.facebook.com/trhgyen'
 GO
--- Tìm kiếm
---CREATE PROC ncc_SearchSupplier( @page int, @size int, @kw nvarchar()
 /*
--- 16/6/2020
+- 26/5/2020
 */
--- Doanh thu theo quoc gia
-CREATE PROC dh_DoanhThuTheoQG( @month int, @year int)
-AS 
+--- Lấy ds KH không phát sinh đơn hàng trong tháng năm truyền vào có phân trang
+CREATE PROC kh_NotOrderInMonthYear
+(
+	@month int, @year int, @page int, @size int
+)
+AS
 BEGIN
-	SELECT c.Country, SUM(od.UnitPrice * od.Quantity * (1-od.Discount)) as DoanhThu
-	FROM Orders o, [Order Details] od, Customers c
-	WHERE o.OrderID = od.OrderID and o.CustomerID = c.CustomerID
-		and MONTH(o.OrderDate) = @month and YEAR(o.OrderDate) = @year
-	GROUP BY c.Country
+	declare @begin int, @end int
+	set @end = @page * @size
+	set @begin = @end - @size + 1
+
+	;with tam as(
+	select ROW_NUMBER() over(order by CustomerID) AS STT, * from Customers c
+	where CustomerID not in(
+		select CustomerID from Orders o
+		where MONTH(OrderDate) = @month and YEAR(OrderDate) = @year
+	))
+
+	select * from tam where STT between @begin and @end
 END
 GO
-EXEC dh_DoanhThuTheoQG 7, 1996
-GO
+exec kh_NotOrderInMonthYear 7, 1996, 1, 5
 
--- Danh sach mat hang ban chay nhat trong khoang thoi gian
-CREATE PROC dh_DSMatHangChayNhat(@page int, @size int, @month int, @year int, @isQuantity int)
+-- Tìm kiếm
+--CREATE PROC ncc_SearchSupplier( @page int, @size int, @kw nvarchar()
+/* đề 3
+-- 16/6/2020
+*/
+-- 3a. Danh sach don hang nhan vien trong khoang thoi gian ( co phan trang)
+CREATE PROC dh_DSDHNV (@page int, @size int, @keyword nvarchar(50), @dateFrom datetime, @dateTo datetime)
+AS
+BEGIN
+	declare @begin int, @end int
+	set @end = @page * @size
+	set @begin = @end - @size + 1
+	;with tam as(
+		select ROW_NUMBER() over(order by OrderID) AS STT, * 
+		from Orders 
+		where OrderDate between @dateFrom and @dateTo
+			and EmployeeID in (
+				SELECT EmployeeID 
+				FROM Employees 
+				WHERE LastName = @keyword)
+	)
+
+	SELECT * FROM tam WHERE STT between @begin and @end
+END
+GO
+exec dh_DSDHNV 1, 5, 'Davolio', '1996-07-06', '1996-09-09'
+go
+-- 3b. Danh sach mat hang ban chay nhat trong khoang thoi gian
+CREATE PROC dh_DSSPBanChay(@page int, @size int, @month int, @year int, @isQuantity int)
 AS 
 BEGIN
 	declare @begin int, @end int
@@ -189,57 +223,21 @@ BEGIN
 		End
 END
 GO
-EXEC dh_DSMatHangChayNhat 1, 20, 7, 1996, 0
+EXEC dh_DSSPBanChay 1, 5, 7, 1996, 1
 GO
-
--- Danh sach don hang nhan vien theo khoang thoi gian ( co phan trang)
-CREATE PROC dh_DSDHNV (@page int, @size int, @keyword nvarchar(50), @dateFrom datetime, @dateTo datetime)
-AS
+-- 3c. Doanh thu theo quoc gia
+CREATE PROC dh_DoanhThuTheoQG( @month int, @year int)
+AS 
 BEGIN
-	declare @begin int, @end int
-	set @end = @page * @size
-	set @begin = @end - @size + 1
-	;with tam as(
-		select ROW_NUMBER() over(order by OrderID) AS STT, * 
-		from Orders 
-		where OrderDate between @dateFrom and @dateTo
-			and EmployeeID in (
-				SELECT EmployeeID 
-				FROM Employees 
-				WHERE LastName = @keyword)
-	)
-
-	SELECT * FROM tam WHERE STT between @begin and @end
+	SELECT c.Country, SUM(od.UnitPrice * od.Quantity * (1-od.Discount)) as DoanhThu
+	FROM Orders o, [Order Details] od, Customers c
+	WHERE o.OrderID = od.OrderID and o.CustomerID = c.CustomerID
+		and MONTH(o.OrderDate) = @month and YEAR(o.OrderDate) = @year
+	GROUP BY c.Country
 END
 GO
-exec dh_DSDHNV 1, 5, 'Davolio', '1996-07-06', '1996-09-09'
-go
-
-/*
-- 26/5/2020
-*/
---- Lấy ds KH không phát sinh đơn hàng trong tháng năm truyền vào có phân trang
-CREATE PROC kh_NotOrderInMonthYear
-(
-	@month int, @year int, @page int, @size int
-)
-AS
-BEGIN
-	declare @begin int, @end int
-	set @end = @page * @size
-	set @begin = @end - @size + 1
-
-	;with tam as(
-	select ROW_NUMBER() over(order by CustomerID) AS STT, * from Customers c
-	where CustomerID not in(
-		select CustomerID from Orders o
-		where MONTH(OrderDate) = @month and YEAR(OrderDate) = @year
-	))
-
-	select * from tam where STT between @begin and @end
-END
+EXEC dh_DoanhThuTheoQG 7, 1996
 GO
-exec kh_NotOrderInMonthYear 7, 1996, 1, 5
 
 /* Đề 2
 -- 9/6/2020
@@ -259,9 +257,8 @@ BEGIN
 	select * from tam where STT between @begin and @end
 END
 GO
-exec dh_DonHangTheoThoiGian '1996-07-06', '1996-07-09', 1, 5
+exec dh_DonHangTheoThoiGian '1996-07-05', '1996-07-09', 1, 5
 go
-
 --- 2b. Chi tiết đơn hàng
 CREATE PROC dh_ChiTietDonHang( @OrderID int)
 AS
@@ -294,7 +291,6 @@ END
 GO
 exec nv_DoanhThuNVTheoNgay '1996-07-05'
 go
-
 --- 1b. Lấy danh sách hóa đơn trong khoảng thời gian truyền vô
 CREATE PROC nv_DoanhThuNVTheoThoiGian
 (

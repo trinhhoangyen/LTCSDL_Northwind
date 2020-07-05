@@ -7,24 +7,38 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./order.component.css']
 })
 export class OrderComponent {
-  list: any = [];
+  listOrder: any = [];
   dateFrom: Date;
   dateTo: Date;
+  orderId: any;
+  listOrderDetail: any;
   constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string) { }
-
-  
-  TraCuu(){
+  XemDSDH(){
     let date= {
-      BeginTime: this.dateFrom,
-      EndTime: this.dateTo,
+      dateFrom: this.dateFrom,
+      dateTo: this.dateTo,
       page: 1,
-      size: 5
+      size: 5,
+      keyword: "",
+      month: 0,
+      year: 0,
+      isQuantity: 0
     }
     this.http.post('https://localhost:44380/' + 'api/Orders/get-order-in-space-time', date).subscribe(result => {
       var res  :any = result;
-      this.list = res.data;
-      console.log(this.list);
+      this.listOrder = res.data;
+      console.log(this.listOrder);
     }, error => console.error(error));
   }
-
+  TraCuu(){
+    let orderReq= {
+      id: this.orderId,
+      keyword: ""
+    }
+    this.http.post('https://localhost:44380/' + 'api/Orders/get-order-detail-by-id', orderReq).subscribe(result => {
+      var res : any = result;
+      this.listOrderDetail = res.data;
+      console.log(this.listOrderDetail);
+    }, error => console.error(error));
+  }
 }

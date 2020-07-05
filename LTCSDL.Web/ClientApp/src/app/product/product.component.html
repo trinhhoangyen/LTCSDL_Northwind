@@ -1,7 +1,7 @@
 <h1 id="tableLabel">Product</h1>
 <p>This component demonstrates products from the server.</p>
 <p *ngIf="!products"><em>Loading...</em></p>
-<button class="btn btn-success" (click)="openModal(false,null)">Add new product</button>
+<button class="btn btn-warning" (click)="openModal(false,null)">Add new product</button>
 
 <table class='table table-striped' style="margin-top: 10px;" aria-labelledby="tableLabel" *ngIf="products.totalRecord>0">
   <thead>

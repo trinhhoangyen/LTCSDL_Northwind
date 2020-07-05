@@ -67,6 +67,60 @@ namespace LTCSDL.Web.Controllers
             return Ok(res);
         }
 
+        // đề 3
+        [HttpPost("get-order-of-employee")]
+        public IActionResult GetOrderOfEmployee([FromBody] OrderFullReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.GetOrderOfEmployee(req);
+            return Ok(res);
+        }
+
+        [HttpPost("get-order-of-employee-linq")]
+        public IActionResult GetOrderOfEmployee_Linq([FromBody] OrderFullReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.GetOrderOfEmployee_Linq(req);
+            return Ok(res);
+        }
+
+        [HttpPost("get-best-seller")]
+        public IActionResult GetBestSeller([FromBody] OrderFullReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.GetBestSeller(req);
+            return Ok(res);
+        }
+
+        [HttpPost("get-best-seller-linq")]
+        public IActionResult GetBestSeller_Linq([FromBody] OrderFullReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.GetBestSeller_Linq(req);
+            return Ok(res);
+        }
+
+        [HttpPost("doanh-thu-theo-quoc-gia")]
+        public IActionResult DoanhThuTheoQG([FromBody] OrderFullReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.DoanhThuTheoQG(req);
+            return Ok(res);
+        }
+        [HttpPost("doanh-thu-theo-quoc-gia-linq")]
+        public IActionResult DoanhThuTheoQG_Linq([FromBody] OrderFullReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.DoanhThuTheoQG_Linq(req);
+            return Ok(res);
+        }
+        [HttpPost("doanh-thu-theo-quoc-gia-linq1")]
+        public IActionResult DoanhThuTheoQG_Linq1([FromBody] OrderFullReq req)
+        {
+            var res = new SingleRsp();
+            res.Data = _svc.DoanhThuTheoQG_Linq1(req);
+            return Ok(res);
+        }
 
         [HttpPost("get-customer-order-history")]
         public IActionResult GetCustOrderHist(string id)
@@ -97,37 +151,6 @@ namespace LTCSDL.Web.Controllers
         {
             var res = new SingleRsp();
             res.Data = _svc.GetCustOrdersDetail_Linq(orderId);
-            return Ok(res);
-        }
-
-        [HttpPost("get-order-of-employee")]
-        public IActionResult GetOrderOfEmployee([FromBody] OrderFullReq req)
-        {
-            var res = new SingleRsp();
-            res.Data = _svc.GetOrderOfEmployee(req);
-            return Ok(res);
-        }
-
-        [HttpPost("get-order-of-employee-linq")]
-        public IActionResult GetOrderOfEmployee_Linq([FromBody] OrderFullReq req)
-        {
-            var res = new SingleRsp();
-            res.Data = _svc.GetOrderOfEmployee_Linq(req);
-            return Ok(res);
-        }
-
-        [HttpPost("get-best-seller-in-month-year")]
-        public IActionResult GetBestSeller([FromBody] OrderFullReq req)
-        {
-            var res = new SingleRsp();
-            res.Data = _svc.GetBestSeller(req);
-            return Ok(res);
-        }
-        [HttpPost("doanh-thu-theo-quoc-gia")]
-        public IActionResult DoanhThuTheoQG([FromBody] OrderFullReq req)
-        {
-            var res = new SingleRsp();
-            res.Data = _svc.DoanhThuTheoQG(req);
             return Ok(res);
         }
 

@@ -24,8 +24,7 @@ namespace LTCSDL.BLL
         }
         #endregion
 
-        #region Method
-        // đề 2
+        #region đề 2
         //2a
         public List<object> GetOrderInSpaceTime(OrderFullReq req)
         {
@@ -50,7 +49,38 @@ namespace LTCSDL.BLL
         {
             return _rep.GetOrderDetailByOrderId_Linq1(id);
         }
+        #endregion
+        #region -- đề 3 --
+        public object GetOrderOfEmployee(OrderFullReq req)
+        {
+            return _rep.GetOrderOfEmployee(req);
+        }
+        public object GetOrderOfEmployee_Linq(OrderFullReq req)
+        {
+            return _rep.GetOrderOfEmployee_Linq(req);
+        }
+        public object GetBestSeller(OrderFullReq req)
+        {
+            return _rep.GetBestSeller(req);
+        }
+        public object GetBestSeller_Linq(OrderFullReq req)
+        {
+            return _rep.GetBestSeller_Linq(req);
+        }
 
+        public object DoanhThuTheoQG(OrderFullReq req)
+        {
+            return _rep.DoanhThuTheoQG(req);
+        }
+        public object DoanhThuTheoQG_Linq(OrderFullReq req)
+        {
+            return _rep.DoanhThuTheoQG_Linq(req);
+        }
+        public object DoanhThuTheoQG_Linq1(OrderFullReq req)
+        {
+            return _rep.DoanhThuTheoQG_Linq1(req);
+        }
+        #endregion
 
         public SingleRsp Createordduct(OrderReq ord)
         {
@@ -131,23 +161,7 @@ namespace LTCSDL.BLL
             res = _rep.GetCustOrdersDetail_Linq1(orderId);
             return res;
         }
-        public object GetOrderOfEmployee(OrderFullReq req)
-        {
-            return _rep.GetOrderOfEmployee(req);
-        }
-        public object GetOrderOfEmployee_Linq(OrderFullReq req)
-        {
-            return _rep.GetOrderOfEmployee_Linq(req);
-        }
-        public object GetBestSeller(OrderFullReq req)
-        {
-            return _rep.GetBestSeller(req);
-        }
-
-        public object DoanhThuTheoQG(OrderFullReq req)
-        {
-            return _rep.DoanhThuTheoQG(req);
-        }
+        
         public object SearchOrder(SearchReq req)
         {
             return _rep.SearchOrder(req);
@@ -156,6 +170,5 @@ namespace LTCSDL.BLL
         {
             return _rep.OrdersInDay(req);
         }
-        #endregion
     }
 }

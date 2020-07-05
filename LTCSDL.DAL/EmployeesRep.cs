@@ -179,7 +179,7 @@ namespace LTCSDL.DAL
             }
             return res;
         }
-
+        // method
         public object DoanhThuNVTheoThoiGian_Linq(TimeReq req)
         {
             var data = from e in Context.Employees

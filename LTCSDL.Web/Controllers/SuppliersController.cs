@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using LTCSDL.BLL;
+﻿using LTCSDL.BLL;
 using LTCSDL.Common.Req;
-using LTCSDL.Common.Rsp;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LTCSDL.Web.Controllers
@@ -20,18 +14,34 @@ namespace LTCSDL.Web.Controllers
         }
         private readonly SuppliersSvc _svc;
 
+        #region -- đề 4 --
         [HttpPost("add-supplier")]
-        public IActionResult AddSupplier(SupplierReq req)
+        public IActionResult AddSupplier([FromBody] SupplierReq req)
         {
             var res = _svc.AddSupplier(req);
             return Ok(res);
         }
 
+        [HttpPost("add-supplier-linq")]
+        public IActionResult AddSupplier_Linq([FromBody] SupplierReq req)
+        {
+            var res = _svc.AddSupplier_Linq(req);
+            return Ok(res);
+        }
+
         [HttpPost("update-supplier")]
-        public IActionResult UpdateSupplier(SupplierReq req)
+        public IActionResult UpdateSupplier([FromBody] SupplierReq req)
         {
             var res = _svc.UpdateSupplier(req);
             return Ok(res);
         }
+
+        [HttpPost("update-supplier-linq")]
+        public IActionResult UpdateSupplier_Linq([FromBody] SupplierReq req)
+        {
+            var res = _svc.UpdateSupplier_Linq(req);
+            return Ok(res);
+        }
+        #endregion
     }
 }

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using LTCSDL.BLL;
+﻿using LTCSDL.BLL;
 using LTCSDL.Common.Req;
 using LTCSDL.Common.Rsp;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace LTCSDL.Web.Controllers
 {
@@ -17,7 +14,7 @@ namespace LTCSDL.Web.Controllers
         {
             _svc = new ProductsSvc();
         }
-        
+
         [HttpPost("get-all")]
         public IActionResult getAllProduct()
         {
@@ -27,7 +24,7 @@ namespace LTCSDL.Web.Controllers
         }
 
         [HttpPost("get-product-by-id")]
-        public IActionResult getProductById([FromBody]SimpleReq req)
+        public IActionResult getProductById([FromBody] SimpleReq req)
         {
             var res = new SingleRsp();
             var pro = _svc.GetProductById(req.Id);
@@ -36,7 +33,7 @@ namespace LTCSDL.Web.Controllers
         }
 
         [HttpPost("get-product-by-supplier")]
-        public IActionResult getProductBySupplier([FromBody]SimpleReq req)
+        public IActionResult getProductBySupplier([FromBody] SimpleReq req)
         {
             var res = new SingleRsp();
             var lstPro = _svc.All.Where(p => p.SupplierId == req.Id).ToList();
@@ -54,14 +51,14 @@ namespace LTCSDL.Web.Controllers
         }
 
         [HttpPost("create-product")]
-        public IActionResult CreateProduct([FromBody]ProductsReq req)
+        public IActionResult CreateProduct([FromBody] ProductsReq req)
         {
             var res = _svc.CreateProduct(req);
             return Ok(res);
         }
 
         [HttpPost("update-product")]
-        public IActionResult UpdateProduct([FromBody]ProductsReq req)
+        public IActionResult UpdateProduct([FromBody] ProductsReq req)
         {
             var res = _svc.UpdateProduct(req);
             return Ok(res);

@@ -5,7 +5,6 @@ using LTCSDL.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace LTCSDL.DAL
 {
@@ -79,6 +78,11 @@ namespace LTCSDL.DAL
             }
             return res;
         }
+
+        /// <summary> đề 4 câu 4
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns>Doanh thu shipper</returns>
         public SingleRsp DoanhThuShipper(DateReq req)
         {
             var res = from s in Context.Shippers
@@ -89,13 +93,9 @@ namespace LTCSDL.DAL
                           s.ShipperId,
                           o.Freight
                       };
-
             SingleRsp result = new SingleRsp();
             result.Data = from r in res
-                          group r by new
-                          {
-                              r.ShipperId
-                          } into e
+                          group r by new { r.ShipperId } into e
                           select new
                           {
                               e.Key.ShipperId,

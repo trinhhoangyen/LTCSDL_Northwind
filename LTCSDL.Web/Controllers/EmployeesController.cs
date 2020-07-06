@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using LTCSDL.BLL;
+﻿using LTCSDL.BLL;
 using LTCSDL.Common.Req;
 using LTCSDL.Common.Rsp;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LTCSDL.Web.Controllers
@@ -47,8 +42,8 @@ namespace LTCSDL.Web.Controllers
         [HttpPost("doanh-thu-nv-theo-thoi-gian")]
         public IActionResult DoanhThuNVTheoThoiGian([FromBody] TimeReq req)
         {
-            var res = new SingleRsp(); 
-            res.Data =_svc.DoanhThuNVTheoThoiGian(req);
+            var res = new SingleRsp();
+            res.Data = _svc.DoanhThuNVTheoThoiGian(req);
             return Ok(res);
         }
         [HttpPost("doanh-thu-nv-theo-thoi-gian-linq")]

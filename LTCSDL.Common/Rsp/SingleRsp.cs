@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LTCSDL.Common.Rsp
+﻿namespace LTCSDL.Common.Rsp
 {
     public class SingleRsp : BaseRsp
     {

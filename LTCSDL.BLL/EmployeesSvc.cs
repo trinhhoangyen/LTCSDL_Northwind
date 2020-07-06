@@ -3,8 +3,6 @@ using LTCSDL.Common.Req;
 using LTCSDL.DAL;
 using LTCSDL.DAL.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LTCSDL.BLL
 {

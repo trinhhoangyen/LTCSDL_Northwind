@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 using LTCSDL.Common.BLL;
 using LTCSDL.Common.Rsp;
 
@@ -10,7 +7,7 @@ namespace LTCSDL.BLL
     using DAL;
     using DAL.Models;
 
-    public class CategoriesSvc: GenericSvc<CategoriesRep, Categories>
+    public class CategoriesSvc : GenericSvc<CategoriesRep, Categories>
     {
         public override SingleRsp Read(int id)
         {

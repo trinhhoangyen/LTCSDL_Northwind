@@ -23,6 +23,7 @@ export class ShipperComponent {
     }
     this.http.post('https://localhost:44380/' + 'api/Shippers/doanh-thu-shipper-theo-thang-nam', this.dateReq).subscribe(result => {
       var res: any = result;
+      console.log(result)
       this.list = res.data
     }, error => {
       alert(error);
@@ -37,6 +38,7 @@ export class ShipperComponent {
     this.http.post('https://localhost:44380/' + 'api/Shippers/doanh-thu-shipper-theo-thang-nam', this.dateReq).subscribe(result => {
       var res: any = result;
       var chartData = this.convert(res.data);
+      console.log(chartData)
       var data = google.visualization.arrayToDataTable(chartData);
       var view = new google.visualization.DataView(data);
       view.setColumns([0, 1,
@@ -64,7 +66,7 @@ export class ShipperComponent {
       var item = [];
       item.push(element.shipperId.toString());
       item.push(parseFloat(parseFloat(element.doanhThu.toString()).toFixed(2)));
-      item.push("gold");
+      item.push("pink");
       res.push(item);
     });
     return res;

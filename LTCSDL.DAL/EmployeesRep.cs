@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 
 namespace LTCSDL.DAL
 {
@@ -103,7 +102,7 @@ namespace LTCSDL.DAL
                       {
                           g.Key.EmployeeId,
                           g.Key.Name,
-                          DoanhThu = Math.Round(float.Parse(g.Sum(x => x.DoanhThu).ToString()))
+                          DoanhThu = Math.Round(float.Parse(g.Sum(x => x.DoanhThu).ToString()), 2)
                       };
             return res;
         }
@@ -124,12 +123,12 @@ namespace LTCSDL.DAL
                         o.Name,
                         DoanhThu = od.UnitPrice * od.Quantity * (1 - (decimal)od.Discount)
                     });
-            var res = data.GroupBy(x=>new { x.EmployeeId, x.Name })
-                    .Select(x => new 
+            var res = data.GroupBy(x => new { x.EmployeeId, x.Name })
+                    .Select(x => new
                     {
                         x.Key.EmployeeId,
                         x.Key.Name,
-                        DoanhThuTrongNgay = Math.Round(float.Parse(x.Sum(x => x.DoanhThu).ToString()))
+                        DoanhThuTrongNgay = Math.Round(float.Parse(x.Sum(x => x.DoanhThu).ToString()), 2)
                     });
 
             return res;

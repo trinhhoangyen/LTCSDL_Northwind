@@ -1,13 +1,12 @@
 ﻿using LTCSDL.Common.DAL;
 using LTCSDL.Common.Req;
+using LTCSDL.Common.Rsp;
 using LTCSDL.DAL.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 
 namespace LTCSDL.DAL
 {
@@ -28,7 +27,12 @@ namespace LTCSDL.DAL
         }
         #endregion
 
-        #region Methods
+        #region -- đề 4 --
+        /// <summary>
+        /// 4a: Thêm mới 1 nhà cung cấp
+        /// </summary>
+        /// <param name="sup"></param>
+        /// <returns>Nhà cung cấp mới thêm</returns>
         public object AddSupplier(SupplierReq sup)
         {
             object res = new object();
@@ -86,6 +90,36 @@ namespace LTCSDL.DAL
             }
             return res;
         }
+        public SingleRsp AddSupplier_Linq(Suppliers obj)
+        {
+            var res = new SingleRsp();
+            // using để dùng được transaction
+            using (var context = new NorthwindContext())
+            {
+                // dùng tran để nếu khi insert sai hoặc có vấn đề gì đó nó tự động pass chứ k insert dữ liệu
+                using (var tran = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var t = context.Suppliers.Add(obj);
+                        context.SaveChanges();
+                        tran.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        tran.Rollback();
+                        res.SetError(ex.StackTrace);
+                    }
+                }
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// 4b: Sửa mới 1 nhà cung cấp
+        /// </summary>
+        /// <param name="sup"></param>
+        /// <returns>Nhà cung cấp mới sửa</returns>
         public object UpdateSupplier(SupplierReq sup)
         {
             object res = new object();
@@ -141,6 +175,30 @@ namespace LTCSDL.DAL
             catch (Exception ex)
             {
                 res = null;
+            }
+            return res;
+        }
+        public SingleRsp UpdateSupplier_Linq(Suppliers obj)
+        {
+            var res = new SingleRsp();
+            // using để dùng được transaction
+            using (var context = new NorthwindContext())
+            {
+                // dùng tran để nếu khi insert sai hoặc có vấn đề gì đó nó tự động pass chứ k insert dữ liệu
+                using (var tran = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var t = context.Suppliers.Update(obj);
+                        context.SaveChanges();
+                        tran.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        tran.Rollback();
+                        res.SetError(ex.StackTrace);
+                    }
+                }
             }
             return res;
         }

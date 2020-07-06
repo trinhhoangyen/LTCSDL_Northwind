@@ -3,10 +3,8 @@ using LTCSDL.Common.Req;
 using LTCSDL.Common.Rsp;
 using LTCSDL.DAL;
 using LTCSDL.DAL.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace LTCSDL.BLL
 {
@@ -48,7 +46,6 @@ namespace LTCSDL.BLL
         {
             var res = new SingleRsp();
             Products products = new Products();
-
             products.ProductId = pro.ProductId;
             products.ProductName = pro.ProductName;
             products.SupplierId = pro.SupplierId;
@@ -69,7 +66,6 @@ namespace LTCSDL.BLL
         {
             var res = new SingleRsp();
             Products products = new Products();
-
             products.ProductId = pro.ProductId;
             products.ProductName = pro.ProductName;
             products.SupplierId = pro.SupplierId;
@@ -86,7 +82,7 @@ namespace LTCSDL.BLL
             return res;
         }
 
-        public object GetProductById( int id)
+        public object GetProductById(int id)
         {
             var pro = All.FirstOrDefault(p => p.ProductId == id);
             var sup = _rep.Context.Suppliers.FirstOrDefault(s => s.SupplierId == pro.SupplierId);

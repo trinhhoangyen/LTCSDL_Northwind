@@ -1,16 +1,13 @@
-<p>Danh sách hàng hóa cần giao trong ngày</p>
-<div>
-    <div class="row mb-3">
-        <label class="col-2 ml-5">Từ ngày: </label>
-        <input class="col-7" type="date" class="col-4 form-control" [(ngModel)]="dateFrom"
-            style="margin-right: 10px;" />
-    </div>
-    <div class="row mb-3">
-        <label class="col-2 ml-5">Đến ngày: </label>
-        <input class="col-7" type="date" class="col-4 form-control" [(ngModel)]="dateTo" style="margin-right: 10px;" />
-    </div>
-    <button class="col col-3 btn btn-primary form-control mr-3" (click)="onShowTable()">Xem table</button>
-    <button class="col col-3 btn btn-primary form-control" (click)="onShowChart()">Xem Bar Chart</button>
+<h5 class="mb-3">Danh sách hàng hóa cần giao trong thời gian</h5>
+<div class="row mb-3">
+    Từ:
+    <input type="date" class="col-4 form-control mx-2" [(ngModel)]="dateFrom"/>
+    Đến:
+    <input type="date" class="col-4 form-control mx-2" [(ngModel)]="dateTo"/>
+</div>
+<div class="row">
+    <button class="col-2 btn btn-primary form-control mr-3" (click)="onShowTable()">Xem table</button>
+    <button class="col-2 btn btn-primary form-control" (click)="onShowChart()">Xem Bar Chart</button>
 </div>
 
 <!-- table -->
@@ -23,11 +20,13 @@
     </thead>
     <tbody>
         <tr *ngFor="let item of list">
-            <td>{{item.orderDate}}</td>
+            <td>{{item.orderDate | date : format : shortDate}}</td>
             <td>{{item.soLuong}}</td>
         </tr>
     </tbody>
 </table>
 
 <!-- bar chart -->
-<div *ngIf="!isTable" id="barchart_values" style="width: 900px; height: 300px;"></div>
+<div *ngIf="!isTable" id="barchart_values" style="width: 900px; height: 300px;">
+
+</div>

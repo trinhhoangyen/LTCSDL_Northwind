@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace LTCSDL.Web.Controllers
 {
     using BLL;
-    using DAL.Models;
     using Common.Req;
     using Common.Rsp;
 
@@ -22,7 +16,7 @@ namespace LTCSDL.Web.Controllers
         }
 
         [HttpPost("get-by-id")]
-        public IActionResult getCategoryById([FromBody]SimpleReq req)
+        public IActionResult getCategoryById([FromBody] SimpleReq req)
         {
             var res = new SingleRsp();
 

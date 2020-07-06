@@ -8,8 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
 
 namespace LTCSDL.DAL
 {
@@ -99,7 +97,7 @@ namespace LTCSDL.DAL
             int totalPage = (total % req.Size) == 0 ? (int)(total / req.Size) : ((int)(total / req.Size) + 1);
             var data = res.OrderBy(x => x.OrderDate).Skip(offSet).Take(req.Size).ToList();
             List<object> lst = new List<object>();
-            for(int i = 0; i <  data.Count(); i++)
+            for (int i = 0; i < data.Count(); i++)
             {
                 var item = data[i];
                 var tam = new
@@ -121,7 +119,7 @@ namespace LTCSDL.DAL
                     item.ShipCountry
                 };
                 lst.Add(tam);
-            }    
+            }
             return new
             {
                 Data = lst,
@@ -204,7 +202,7 @@ namespace LTCSDL.DAL
                         p.ProductName,
                         Total = od.Quantity * od.UnitPrice * (1 - (decimal)od.Discount)
                     })
-                    .Where(x=>x.OrderId == id)
+                    .Where(x => x.OrderId == id)
                     .Join(Context.Orders, od => od.OrderId, o => o.OrderId, (od, o) => new
                     {
                         o.OrderId,
@@ -437,7 +435,6 @@ namespace LTCSDL.DAL
             };
         }
 
-
         /// <summary>
         /// 3b: doanh thu quốc gia trong tháng năm nhập vô
         /// </summary>
@@ -469,7 +466,7 @@ namespace LTCSDL.DAL
                         var x = new
                         {
                             Country = row["Country"],
-                            DoanhThu = row["DoanhThu"]
+                            DoanhThu = Math.Round(float.Parse(row["DoanhThu"].ToString()), 2)
                         };
                         res.Add(x);
                     }
@@ -482,7 +479,7 @@ namespace LTCSDL.DAL
             return res;
         }
         // suntax
-        public object DoanhThuTheoQG_Linq(OrderFullReq req) 
+        public object DoanhThuTheoQG_Linq(OrderFullReq req)
         {
             var res = from o in Context.Orders
                       where o.OrderDate.Value.Month == req.Month && o.OrderDate.Value.Year == req.Year
@@ -501,18 +498,117 @@ namespace LTCSDL.DAL
         {
             var res = Context.Orders
                     .Where(x => x.OrderDate.Value.Month == req.Month && x.OrderDate.Value.Year == req.Year)
-                    .Join(Context.OrderDetails, o => o.OrderId, od => od.OrderId, (o, od) => new 
-                    { 
+                    .Join(Context.OrderDetails, o => o.OrderId, od => od.OrderId, (o, od) => new
+                    {
                         o.ShipCountry,
                         DoanhThu = od.UnitPrice * od.Quantity * (1 - (decimal)od.Discount)
                     })
-                    .GroupBy(x=> new { x.ShipCountry })
-                    .Select(x => new 
-                    { 
+                    .GroupBy(x => new { x.ShipCountry })
+                    .Select(x => new
+                    {
                         x.Key.ShipCountry,
                         DoanhThu = x.Sum(x => x.DoanhThu)
                     });
             return res;
+        }
+        #endregion
+
+        #region -- đề 5 --
+        /// <summary>
+        /// 1c: tìm kiếm hóa đơn theo CompanyName, EmployeeName
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns>danh sách đơn hàng</returns>
+        public object SearchOrder(SearchReq req)
+        {
+            List<object> res = new List<object>();
+            var cnn = (SqlConnection)Context.Database.GetDbConnection();
+            if (cnn.State == ConnectionState.Closed)
+            {
+                cnn.Open();
+            }
+            try
+            {
+                SqlDataAdapter da = new SqlDataAdapter();
+                DataSet ds = new DataSet();
+                var cmd = cnn.CreateCommand();
+                cmd.CommandText = "hd_SearchOrder";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@keyword", req.Keyword);
+                cmd.Parameters.AddWithValue("@page", req.Page);
+                cmd.Parameters.AddWithValue("@size", req.Size);
+                da.SelectCommand = cmd;
+                da.Fill(ds);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow row in ds.Tables[0].Rows)
+                    {
+                        var x = new
+                        {
+                            OrderId = row["OrderId"],
+                            CustomerId = row["CustomerId"],
+                            EmployeeName = row["FirstNameEmplpyee"].ToString() + " " + row["LastNameEmployee"].ToString(),
+                            CompanyName = row["CompanyName"],
+                            OrderDate = row["OrderDate"],
+                            RequiredDate = row["RequiredDate"],
+                            ShippedDate = row["ShippedDate"]
+
+                        };
+                        res.Add(x);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                res = null;
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// câu 4: danh sách đơn hàng theo ngày nhập vô
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns>danh sách đơn hàng, tên khách hàng, địa chỉ cần giao trong ngày đó có phân trang</returns>
+        public object OrdersInDay(OrderTodayReq req)
+        {
+            var res = from o in Context.Orders
+                      join c in Context.Customers on o.CustomerId equals c.CustomerId
+                      where o.OrderDate == req.Date
+                      select new
+                      {
+                          o.OrderId,
+                          o.OrderDate,
+                          c.ContactName,
+                          o.ShipAddress
+                      };
+            var offSet = (req.Page - 1) * req.Size;
+            var total = res.Count();
+            int totalPage = (total % req.Size) == 0 ? (int)(total / req.Size) : ((int)(total / req.Size) + 1);
+            var data = res.OrderBy(x => x.OrderDate).Skip(offSet).Take(req.Size).ToList();
+            List<object> lst = new List<object>();
+            for (int i = 0; i < data.Count(); i++)
+            {
+                var item = data[i];
+                var tam = new
+                {
+                    STT = i + 1 + offSet,
+                    item.OrderId,
+                    item.OrderDate,
+                    item.ContactName,
+                    item.ShipAddress
+
+                };
+                lst.Add(tam);
+            }
+            return new
+            {
+                Data = lst,
+                TotalRecords = total,
+                Page = req.Page,
+                Size = req.Size,
+                TotalPages = totalPage
+            };
         }
         #endregion
 
@@ -597,7 +693,8 @@ namespace LTCSDL.DAL
                         res.Add(x);
                     }
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 res = null;
             }
@@ -658,94 +755,6 @@ namespace LTCSDL.DAL
                 ExtendedPrice = b.Quantity * (1 - (decimal)b.Discount) * b.UnitPrice
             }).Where(x => x.OrderId == orderId).ToList();
             return res;
-        }
-
-
-        public object SearchOrder(SearchReq req)
-        {
-            List<object> res = new List<object>();
-            var cnn = (SqlConnection)Context.Database.GetDbConnection();
-            if (cnn.State == ConnectionState.Closed)
-            {
-                cnn.Open();
-            }
-            try
-            {
-                SqlDataAdapter da = new SqlDataAdapter();
-                DataSet ds = new DataSet();
-                var cmd = cnn.CreateCommand();
-                cmd.CommandText = "or_SearchOrder";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@keyword", req.Keyword);
-                cmd.Parameters.AddWithValue("@page", req.Page);
-                cmd.Parameters.AddWithValue("@size", req.Size);
-                da.SelectCommand = cmd;
-                da.Fill(ds);
-                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-                {
-                    foreach (DataRow row in ds.Tables[0].Rows)
-                    {
-                        var x = new
-                        {
-                            OrderId = row["OrderId"],
-                            CustomerId = row["CustomerId"],
-                            EmployeeName = row["FirstNameEmplpyee"].ToString() + row["LastNameEmployee"].ToString(),
-                            CompanyName = row["CompanyName"],
-                            OrderDate = row["OrderDate"],
-                            RequiredDate = row["RequiredDate"],
-                            ShippedDate = row["ShippedDate"]
-
-                        };
-                        res.Add(x);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                res = null;
-            }
-            return res;
-        }
-
-        public object OrdersInDay(OrderTodayReq req)
-        {
-            var res = from o in Context.Orders
-                      join c in Context.Customers on o.CustomerId equals c.CustomerId
-                      where o.OrderDate == req.Date
-                      select new
-                      {
-                          o.OrderId,
-                          o.OrderDate,
-                          c.ContactName,
-                          o.ShipAddress
-                      };
-            var offSet = (req.Page - 1) * req.Size;
-            var total = res.Count();
-            int totalPage = (total % req.Size) == 0 ? (int)(total / req.Size) : ((int)(total / req.Size) + 1);
-            var data = res.OrderBy(x => x.OrderDate).Skip(offSet).Take(req.Size).ToList();
-            List<object> lst = new List<object>();
-            for (int i = 0; i < data.Count(); i++)
-            {
-                var item = data[i];
-                var tam = new
-                {
-                    STT = i + 1 + offSet,
-                    OrderId = item.OrderId,
-                    OrderDate = item.OrderDate,
-                    ContactName = item.ContactName,
-                    ShipAddress = item.ShipAddress
-
-                };
-                lst.Add(tam);
-            }
-            return new
-            {
-                Data = lst,
-                TotalRecords = total,
-                Page = req.Page,
-                Size = req.Size,
-                TotalPages = totalPage
-            };
         }
         #endregion
     }

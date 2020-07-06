@@ -1,8 +1,70 @@
 ﻿/*
+- 26/5/2020
+*/
+--- Lấy ds KH không phát sinh đơn hàng trong tháng năm truyền vào có phân trang
+CREATE PROC kh_NotOrderInMonthYear
+(
+	@month int, @year int, @page int, @size int
+)
+AS
+BEGIN
+	declare @begin int, @end int
+	set @end = @page * @size
+	set @begin = @end - @size + 1
+
+	;with tam as(
+	select ROW_NUMBER() over(order by CustomerID) AS STT, * from Customers c
+	where CustomerID not in(
+		select CustomerID from Orders o
+		where MONTH(OrderDate) = @month and YEAR(OrderDate) = @year
+	))
+
+	SELECT * FROM tam WHERE STT between @begin and @end
+END
+GO
+EXEC kh_NotOrderInMonthYear 7, 1996, 1, 5
+GO
+/* đề 5
 -- 30/6/2020
 */
--- Tìm kiếm Order theo CompanyName, EmployeeName
-CREATE PROC or_SearchOrder(@keyword nvarchar(50), @page int, @size int)
+-- 5a. Sản phẩm không có đơn hàng trong ngày
+CREATE PROC sp_ProductsNotOrder (@date datetime, @page int, @size int)
+AS
+BEGIN
+	declare @begin int, @end int
+	set @end = @page * @size
+	set @begin = @end - @size + 1
+
+	;with tam as(
+		SELECT ROW_NUMBER() OVER(ORDER BY ProductID) AS STT, * FROM Products
+		WHERE ProductId NOT IN (
+			SELECT ProductId FROM Orders
+			WHERE OrderDate = @date
+		))
+	select * from tam where STT between @begin and @end
+END
+GO
+exec sp_ProductsNotOrder '2020/07/01', 1, 5
+GO
+-- 5b. Sản phẩm không còn tồn kho
+CREATE PROC sp_SPKhongCoTonKho (@page int, @size int)
+AS
+BEGIN
+	declare @begin int, @end int
+	set @end = @page * @size
+	set @begin = @end - @size + 1
+
+	;with tam as(
+		SELECT ROW_NUMBER() OVER(ORDER BY ProductID) AS STT, * FROM Products
+		WHERE UnitsInStock = 0
+	)
+	select * from tam where STT between @begin and @end
+END
+GO
+exec sp_SPKhongCoTonKho 1, 5
+GO
+-- 5c. Tìm kiếm Order theo CompanyName, EmployeeName
+CREATE PROC hd_SearchOrder(@keyword nvarchar(50), @page int, @size int)
 AS
 BEGIN
 	declare @begin int, @end int
@@ -22,48 +84,13 @@ BEGIN
 	select * from tam where STT between @begin and @end
 END
 GO
-EXEC or_SearchOrder 'Speedy Express', 1, 5
+EXEC hd_SearchOrder 'Speedy Express', 1, 5
 GO
--- Sản phẩm không còn tồn kho
-CREATE PROC sp_SPKhongCoTonKho (@page int, @size int)
-AS
-BEGIN
-	declare @begin int, @end int
-	set @end = @page * @size
-	set @begin = @end - @size + 1
 
-	;with tam as(
-		SELECT ROW_NUMBER() OVER(ORDER BY ProductID) AS STT, * FROM Products
-		WHERE UnitsInStock = 0
-	)
-	select * from tam where STT between @begin and @end
-END
-GO
-exec sp_SPKhongCoTonKho 1, 5
-GO
--- Sản phẩm không có đơn hàng trong ngày
-CREATE PROC pr_ProductsNotOrder (@date datetime, @page int, @size int)
-AS
-BEGIN
-	declare @begin int, @end int
-	set @end = @page * @size
-	set @begin = @end - @size + 1
-
-	;with tam as(
-		SELECT ROW_NUMBER() OVER(ORDER BY ProductID) AS STT, * FROM Products
-		WHERE ProductId NOT IN (
-			SELECT ProductId FROM Orders
-			WHERE OrderDate = @date
-		))
-	select * from tam where STT between @begin and @end
-END
-GO
-exec pr_ProductsNotOrder '2020/07/01', 1, 5
-GO
-/*
+/* đề 4
 -- 23/6/2020
 */
--- Thêm
+-- 4a. Thêm nhà cung cấp
 CREATE PROC ncc_AddSupplier
 (
 	@CompanyName nvarchar(40), 
@@ -88,10 +115,9 @@ BEGIN
 	WHERE CompanyName = @CompanyName and ContactName = @ContactName and ContactTitle = @ContactTitle
 END
 GO
-
-EXEC sp_AddSupplier 'Open University', 'Ms. Yen', 'Madam', '92560 SA Cali', '', 'LA', '700000', 'USA', '(84)912-834-740', null, 'https://www.facebook.com/trhgyen'
+EXEC ncc_AddSupplier 'Open University', 'Ms. Yen', 'Madam', '92560 SA Cali', '', 'LA', '700000', 'USA', '(84)912-834-740', null, 'https://www.facebook.com/trhgyen'
 GO
--- Sửa
+-- 4b. Sửa nhà cung cấp
 CREATE PROC ncc_UpdateSupplier
 (
 	@SupplierID int,
@@ -128,36 +154,27 @@ BEGIN
 	WHERE SupplierID = @SupplierID
 END
 GO
-EXEC sp_UpdateSupplier 31, 'Open University', 'Ms. Yen', 'Madam', '92560 SA Cali', '', 'LA', '700000', 'USA', '(84)912-834-740', null, 'https://www.facebook.com/trhgyen'
+EXEC ncc_UpdateSupplier 31, 'Open University', 'Ms. Yen', 'Madam', '92560 SA Cali', '', 'LA', '700000', 'USA', '(84)912-834-740', null, 'https://www.facebook.com/trhgyen'
 GO
-/*
-- 26/5/2020
-*/
---- Lấy ds KH không phát sinh đơn hàng trong tháng năm truyền vào có phân trang
-CREATE PROC kh_NotOrderInMonthYear
-(
-	@month int, @year int, @page int, @size int
-)
+-- 4c. Tìm nhà cung cấp theo CompanyName, Country
+CREATE PROC ncc_SearchSupplier( @page int, @size int, @keyword nvarchar(50))
 AS
 BEGIN
 	declare @begin int, @end int
 	set @end = @page * @size
-	set @begin = @end - @size + 1
+	set @begin = @end - @size + 1;
 
-	;with tam as(
-	select ROW_NUMBER() over(order by CustomerID) AS STT, * from Customers c
-	where CustomerID not in(
-		select CustomerID from Orders o
-		where MONTH(OrderDate) = @month and YEAR(OrderDate) = @year
-	))
-
-	select * from tam where STT between @begin and @end
+	WITH tam AS(
+			SELECT ROW_NUMBER() OVER(ORDER BY SupplierID) AS STT, * 
+			FROM Suppliers
+			WHERE CompanyName like'%' + @keyword + '%'
+				OR Country like'%' + @keyword + '%' )
+	SELECT * FROM tam
+	WHERE STT between @begin and @end
 END
 GO
-exec kh_NotOrderInMonthYear 7, 1996, 1, 5
-
--- Tìm kiếm
---CREATE PROC ncc_SearchSupplier( @page int, @size int, @kw nvarchar()
+EXEC ncc_SearchSupplier 1 ,5, 'Tokyo'
+GO
 /* đề 3
 -- 16/6/2020
 */

@@ -7,7 +7,7 @@ declare var $:any; // it dont know jquery
   styleUrls: ['./product.component.css']
 })
 export class ProductComponent{
-  size: number = 10;
+  size: number = 5;
   products: any={
     data:[],
     page: 0,
@@ -16,7 +16,6 @@ export class ProductComponent{
     totalRecord: 0,
   };
   isEdit: boolean = false;
-
   product ={
     productId: 0,
     productName: "",
@@ -29,7 +28,6 @@ export class ProductComponent{
     reorderLevel: "0",
     discontinued: false,
   };
-
   constructor(
     private http: HttpClient, 
     @Inject('BASE_URL') baseUrl: string) {
@@ -56,7 +54,6 @@ export class ProductComponent{
       alert(error);
     });
   }
-
   searchNext()
   {
     if( this.products.page < this.products.totalPages)

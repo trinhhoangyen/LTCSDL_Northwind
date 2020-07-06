@@ -23,8 +23,7 @@ export class StatisticComponent{
     }
     this.http.post('https://localhost:44380/' + 'api/Products/quantity-products-in-order', this.dateReq).subscribe(result => {
       var res: any = result;
-      console.log(result)
-      this.list = res.data
+      this.list = res
     }, error => {
       alert(error);
     });
@@ -33,11 +32,14 @@ export class StatisticComponent{
     this.isTable = false;
     this.dateReq = {
       dateFrom: this.dateFrom,
-      dateTo : this.dateTo
+      dateTo: this.dateTo,
     }
     this.http.post('https://localhost:44380/' + 'api/Products/quantity-products-in-order', this.dateReq).subscribe(result => {
       var res: any = result;
-      var chartData = this.convert(res.data);
+      var chartData = this.convert(res);
+      console.log(chartData)
+
+
       var data = google.visualization.arrayToDataTable(chartData);
       var view = new google.visualization.DataView(data);
       view.setColumns([0, 1,
@@ -49,7 +51,7 @@ export class StatisticComponent{
         },
         2]);
       var options = {
-        title: "Thống kê hàng hóa cần giao từ " + this.dateFrom + " đến ngày " + this.dateTo,
+        title: "Sản phẩm cần giao từ " + this.dateFrom + "/" + this.dateTo,
         width: 600,
         height: 400,
         bar: { groupWidth: "95%" },
@@ -60,13 +62,11 @@ export class StatisticComponent{
     });
   }
   convert(lst) {
-    var res = [["Ngày", "Số lượng", { role: 'style' }]]
+    let list: any[] = ["Ngày", "Số lượng", { role: 'style' }]
+    let res: any[] = []
+    res.push(list)
     lst.forEach(element => {
-      var item = [];
-      item.push(element.orderDate.toString());
-      item.push(element.soLuong.toString());
-      item.push("gold");
-      res.push(item);
+      res.push([element.orderDate,element.soLuong,'pink'])
     });
     return res;
   }

@@ -3,14 +3,11 @@ using LTCSDL.Common.Req;
 using LTCSDL.Common.Rsp;
 using LTCSDL.DAL;
 using LTCSDL.DAL.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace LTCSDL.BLL
 {
-    public class OrdersSvc: GenericSvc<OrdersRep, Orders>
+    public class OrdersSvc : GenericSvc<OrdersRep, Orders>
     {
         #region --Override --
         public override SingleRsp Read(int id)
@@ -50,6 +47,7 @@ namespace LTCSDL.BLL
             return _rep.GetOrderDetailByOrderId_Linq1(id);
         }
         #endregion
+
         #region -- đề 3 --
         public object GetOrderOfEmployee(OrderFullReq req)
         {
@@ -161,7 +159,7 @@ namespace LTCSDL.BLL
             res = _rep.GetCustOrdersDetail_Linq1(orderId);
             return res;
         }
-        
+
         public object SearchOrder(SearchReq req)
         {
             return _rep.SearchOrder(req);
